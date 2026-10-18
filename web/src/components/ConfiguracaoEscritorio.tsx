@@ -29,7 +29,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
       {/* Coluna da Esquerda: Configurações do Escritório & Equipe */}
       <div className="settings-main-col glass-panel">
         <div className="settings-section-header">
-          <Building size={20} color="#C9A86A" />
+          <Building size={20} color="#B47E20" />
           <h2 className="section-title">
             {isSoloMode ? 'Configurações da Conta do Advogado' : 'Dados do Escritório & Roteamento por OAB'}
           </h2>
@@ -59,7 +59,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
           <div className="form-group full-width">
             <label className="input-label">E-mail de Captura Dedicado (Inbound Gateway):</label>
             <div className="email-display-bar">
-              <Mail size={16} color="#C9A86A" />
+              <Mail size={16} color="#B47E20" />
               <code>{tenant.inboundEmail}</code>
             </div>
             <p className="field-hint">
@@ -109,7 +109,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
       {/* Coluna da Direita: Planos SaaS & Precificação */}
       <div className="settings-side-col glass-panel">
         <div className="plan-summary-header">
-          <CreditCard size={20} color="#C9A86A" />
+          <CreditCard size={20} color="#B47E20" />
           <h3 className="section-title">Seu Plano SaaS & Lucratividade</h3>
         </div>
 

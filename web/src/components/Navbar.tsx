@@ -36,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Brand */}
         <div className="brand-wrapper">
           <div className="brand-icon">
-            <Scale size={24} color="#C9A86A" />
+            <Scale size={24} color="#B47E20" />
           </div>
           <div>
             <div className="brand-title">
@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* E-mail Dedicado do Escritório (Pilar Central) */}
         <div className="inbound-box">
           <div className="inbound-label">
-            <Mail size={13} color="#C9A86A" />
+            <Mail size={13} color="#B47E20" />
             <span>E-MAIL DE CAPTURA DO ESCRITÓRIO:</span>
           </div>
           <div className="inbound-email-row">

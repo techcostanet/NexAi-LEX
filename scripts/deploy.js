@@ -121,6 +121,51 @@ try {
   console.error(`⚠️ Atenção no push ao GitHub:`, pushErr.message);
 }
 
+// 8. Publicar site no GitHub Pages (branch gh-pages)
+console.log(`\n🌐 Publicando site no GitHub Pages (https://techcostanet.github.io/NexAi-LEX/)...`);
+try {
+  const ghPagesTempDir = path.join(rootDir, '.gh-pages-temp');
+  if (fs.existsSync(ghPagesTempDir)) {
+    try { execSync(`git worktree remove "${ghPagesTempDir}" --force`, { cwd: rootDir, stdio: 'ignore' }); } catch (_) {}
+    fs.rmSync(ghPagesTempDir, { recursive: true, force: true });
+  }
+
+  execSync(`git worktree add -B gh-pages "${ghPagesTempDir}"`, { stdio: 'pipe', cwd: rootDir });
+
+  // Limpar conteúdo antigo do worktree (exceto .git)
+  for (const file of fs.readdirSync(ghPagesTempDir)) {
+    if (file !== '.git') {
+      fs.rmSync(path.join(ghPagesTempDir, file), { recursive: true, force: true });
+    }
+  }
+
+  // Copiar build de web/dist
+  const distDir = path.join(rootDir, 'web', 'dist');
+  fs.cpSync(distDir, ghPagesTempDir, { recursive: true });
+
+  // Adicionar arquivo .nojekyll
+  fs.writeFileSync(path.join(ghPagesTempDir, '.nojekyll'), '');
+
+  // Commit e push para o GitHub gh-pages
+  execSync('git add -A', { cwd: ghPagesTempDir, stdio: 'pipe' });
+  execSync(`git commit -m "deploy(v${newVersion}): ${releaseTitle}"`, { cwd: ghPagesTempDir, stdio: 'pipe' });
+  execSync('git push -u origin gh-pages --force', { cwd: ghPagesTempDir, stdio: 'inherit' });
+
+  // Limpar worktree
+  execSync(`git worktree remove "${ghPagesTempDir}" --force`, { cwd: rootDir, stdio: 'pipe' });
+  console.log(`✓ Site publicado com sucesso no GitHub Pages: https://techcostanet.github.io/NexAi-LEX/`);
+} catch (pubErr) {
+  console.warn(`⚠️ Aviso na publicação gh-pages:`, pubErr.message);
+  try {
+    const ghPagesTempDir = path.join(rootDir, '.gh-pages-temp');
+    if (fs.existsSync(ghPagesTempDir)) {
+      execSync(`git worktree remove "${ghPagesTempDir}" --force`, { cwd: rootDir, stdio: 'ignore' });
+    }
+  } catch (_) {}
+}
+
 console.log(`\n=================================================`);
 console.log(`✅ DEPLOY v${newVersion} CONCLUÍDO COM SUCESSO!`);
+console.log(`🌐 URL Pública: https://techcostanet.github.io/NexAi-LEX/`);
 console.log(`=================================================\n`);
+

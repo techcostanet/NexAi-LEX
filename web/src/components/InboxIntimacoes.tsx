@@ -201,7 +201,7 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
             {!isSoloMode && (
               <div className="lawyer-routing-box">
                 <div className="routing-label">
-                  <UserCheck size={14} color="#C9A86A" />
+                  <UserCheck size={14} color="#B47E20" />
                   <span>Roteamento Inteligente por OAB:</span>
                 </div>
                 <div className="routing-value">
@@ -216,7 +216,7 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
             {/* Análise Inteligente com Gemini */}
             <div className="gemini-analysis-section">
               <div className="gemini-header">
-                <Sparkles size={16} color="#C9A86A" />
+                <Sparkles size={16} color="#B47E20" />
                 <span>Resumo Executivo Gerado por IA (Google Gemini 1.5)</span>
               </div>
               <p className="gemini-summary-text">
@@ -227,7 +227,7 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               <ul className="keypoints-list">
                 {selectedNotif.extractedData.keyPoints.map((pt, idx) => (
                   <li key={idx}>
-                    <ArrowRight size={13} color="#C9A86A" />
+                    <ArrowRight size={13} color="#B47E20" />
                     <span>{pt}</span>
                   </li>
                 ))}

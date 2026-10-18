@@ -6,6 +6,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.2.0] — 2026-10-18
+
+### ⚡ Design System Claro (Light Theme) e Publicacao Online
+* Redesign completo do Design System para modo claro (Executive Light Tech)
+* Alta legibilidade com paleta bronze nobre e fundos limpos
+* Configuracao de base relativa para publicacao multiplataforma
+* Publicacao e hospedagem automatizada no GitHub Pages via branch gh-pages
+* Configuracao de hosting no firebase.json
+
 ## [1.1.0] — 2026-10-18
 
 ### ⚡ Arquitetura 100% Online Cloud Firestore e Sincronização GitHub
