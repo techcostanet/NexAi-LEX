@@ -9,4 +9,8 @@
 5. **Arquitetura 100% Online (Zero LocalStorage / Zero Mocks Locais):** 
    - Proibido o uso de `localStorage`, `sessionStorage` ou armazenamento no navegador para persistência de dados do sistema.
    - Todo o sistema é SaaS multi-usuário. Múltiplos advogados do mesmo escritório devem ter dados compartilhados em tempo real na nuvem através do **Google Cloud Firestore**.
-6. **Script de Deploy:** Para executar essa rotina de forma padronizada, utilize o script `node scripts/deploy.js --type=patch|minor|major --title="..." --changes="..."`.
+6. **Hospedagem 100% Google Cloud / Firebase (Zero Hosting no GitHub):**
+   - O sistema é hospedado e servido exclusivamente na infraestrutura Google (**Google Firebase Hosting** no projeto oficial `nexai-lex`: `https://nexai-lex.web.app`).
+   - O GitHub (`https://github.com/techcostanet/NexAi-LEX`) é utilizado estritamente para backup e versionamento do código-fonte e tags.
+7. **Script de Deploy:** Para executar essa rotina de forma padronizada, utilize o script `node scripts/deploy.js --type=patch|minor|major --title="..." --changes="..."`.
+

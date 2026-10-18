@@ -26,3 +26,8 @@ Estas regras devem ser seguidas com rigor absoluto em **todas** as interações 
 ## 5. Arquitetura 100% Online (Zero LocalStorage / Zero Mocks Locais)
 * **Proibido o uso de `localStorage` ou `sessionStorage`:** Nenhuma informação de processos, prazos, intimações ou perfil pode ser guardada na memória local do navegador.
 * **SaaS Multi-advogado:** Quando um advogado do escritório aprovar um prazo ou receber uma intimação, todos os outros advogados do mesmo escritório devem ver o dado atualizado em tempo real na nuvem através do **Google Cloud Firestore** (`onSnapshot`).
+
+## 6. Hospedagem Exclusiva no Google Cloud / Firebase (Zero Hosting no GitHub)
+* O frontend e backend da aplicação devem ser hospedados exclusivamente na infraestrutura Google (**Google Firebase Hosting** no projeto `nexai-lex` em `https://nexai-lex.web.app`).
+* O repositório no GitHub (`https://github.com/techcostanet/NexAi-LEX`) é utilizado estritamente para manter a cópia de segurança do código-fonte e histórico de tags.
+

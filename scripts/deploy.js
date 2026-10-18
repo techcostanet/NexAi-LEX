@@ -112,60 +112,29 @@ try {
   console.warn(`ℹ️ Git registro concluído ou sem alterações pendentes.`);
 }
 
-// 7. Enviar cópia e tags automaticamente para o GitHub
-console.log(`\n☁️ Enviando versão v${newVersion} para o GitHub (https://github.com/techcostanet/NexAi-LEX)...`);
+// 7. Publicar site no Google Firebase Hosting (Hospedagem Oficial 100% Google Cloud)
+console.log(`\n🔥 Publicando site no Google Firebase Hosting (projeto: nexai-lex)...`);
+try {
+  execSync('npx.cmd --yes firebase deploy --only hosting --project nexai-lex', { stdio: 'inherit', cwd: rootDir });
+  console.log(`✓ Site publicado com sucesso no Google Firebase Hosting!`);
+} catch (pubErr) {
+  console.error(`❌ Erro durante o deploy no Firebase Hosting:`, pubErr.message);
+  process.exit(1);
+}
+
+// 8. Sincronizar cópia do código e tags no repositório GitHub (backup do código)
+console.log(`\n☁️ Sincronizando cópia do código com o GitHub (https://github.com/techcostanet/NexAi-LEX)...`);
 try {
   execSync('git push origin main --tags', { stdio: 'inherit', cwd: rootDir });
-  console.log(`✓ Cópia remota sincronizada no GitHub com sucesso.`);
+  console.log(`✓ Cópia do código sincronizada no GitHub com sucesso.`);
 } catch (pushErr) {
   console.error(`⚠️ Atenção no push ao GitHub:`, pushErr.message);
 }
 
-// 8. Publicar site no GitHub Pages (branch gh-pages)
-console.log(`\n🌐 Publicando site no GitHub Pages (https://techcostanet.github.io/NexAi-LEX/)...`);
-try {
-  const ghPagesTempDir = path.join(rootDir, '.gh-pages-temp');
-  if (fs.existsSync(ghPagesTempDir)) {
-    try { execSync(`git worktree remove "${ghPagesTempDir}" --force`, { cwd: rootDir, stdio: 'ignore' }); } catch (_) {}
-    fs.rmSync(ghPagesTempDir, { recursive: true, force: true });
-  }
-
-  execSync(`git worktree add -B gh-pages "${ghPagesTempDir}"`, { stdio: 'pipe', cwd: rootDir });
-
-  // Limpar conteúdo antigo do worktree (exceto .git)
-  for (const file of fs.readdirSync(ghPagesTempDir)) {
-    if (file !== '.git') {
-      fs.rmSync(path.join(ghPagesTempDir, file), { recursive: true, force: true });
-    }
-  }
-
-  // Copiar build de web/dist
-  const distDir = path.join(rootDir, 'web', 'dist');
-  fs.cpSync(distDir, ghPagesTempDir, { recursive: true });
-
-  // Adicionar arquivo .nojekyll
-  fs.writeFileSync(path.join(ghPagesTempDir, '.nojekyll'), '');
-
-  // Commit e push para o GitHub gh-pages
-  execSync('git add -A', { cwd: ghPagesTempDir, stdio: 'pipe' });
-  execSync(`git commit -m "deploy(v${newVersion}): ${releaseTitle}"`, { cwd: ghPagesTempDir, stdio: 'pipe' });
-  execSync('git push -u origin gh-pages --force', { cwd: ghPagesTempDir, stdio: 'inherit' });
-
-  // Limpar worktree
-  execSync(`git worktree remove "${ghPagesTempDir}" --force`, { cwd: rootDir, stdio: 'pipe' });
-  console.log(`✓ Site publicado com sucesso no GitHub Pages: https://techcostanet.github.io/NexAi-LEX/`);
-} catch (pubErr) {
-  console.warn(`⚠️ Aviso na publicação gh-pages:`, pubErr.message);
-  try {
-    const ghPagesTempDir = path.join(rootDir, '.gh-pages-temp');
-    if (fs.existsSync(ghPagesTempDir)) {
-      execSync(`git worktree remove "${ghPagesTempDir}" --force`, { cwd: rootDir, stdio: 'ignore' });
-    }
-  } catch (_) {}
-}
-
 console.log(`\n=================================================`);
 console.log(`✅ DEPLOY v${newVersion} CONCLUÍDO COM SUCESSO!`);
-console.log(`🌐 URL Pública: https://techcostanet.github.io/NexAi-LEX/`);
+console.log(`🔥 Hospedagem Oficial: https://nexai-lex.web.app`);
+console.log(`🔥 Domínio Secundário: https://nexai-lex.firebaseapp.com`);
+console.log(`☁️ Repositório Código: https://github.com/techcostanet/NexAi-LEX`);
 console.log(`=================================================\n`);
 

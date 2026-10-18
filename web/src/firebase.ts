@@ -9,8 +9,8 @@ const firebaseConfig = {
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "nexai-lex.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "nexai-lex",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "nexai-lex.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "102938475610",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:102938475610:web:98f12a3b4c5d6e7f8"
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "23616077470",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:23616077470:web:nexai-lex-web-2026"
 };
 
 // Inicialização segura de única instância

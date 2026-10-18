@@ -6,6 +6,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.2.1] — 2026-10-18
+
+### ⚡ Hospedagem 100% Google Firebase Hosting no projeto nexai-lex
+* Migracao definitiva da hospedagem para Google Firebase Hosting (nexai-lex.web.app)
+* Repositorio GitHub mantido estritamente para backup de codigo e tags
+* Configuracao do .firebaserc e project number 23616077470
+* Atualizacao das regras do projeto em AGENTS.md e .agents/rules
+
 ## [1.2.0] — 2026-10-18
 
 ### ⚡ Design System Claro (Light Theme) e Publicacao Online
