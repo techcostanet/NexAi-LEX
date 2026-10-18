@@ -1,5 +1,6 @@
 {
-  "version": "1.0.0",
-  "buildDate": "2026-10-18T13:35:00-03:00",
-  "channel": "production"
+  "version": "1.0.1",
+  "buildDate": "2026-10-18T16:38:21.484Z",
+  "channel": "production",
+  "title": "Implementação do sistema de auto-versionamento e regras de deploy"
 }

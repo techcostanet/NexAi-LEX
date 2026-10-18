@@ -6,6 +6,13 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.0.1] — 2026-10-18
+
+### ⚡ Implementação do sistema de auto-versionamento e regras de deploy
+* Criação do script de deploy automatizado
+* Registro da regra em .agents/rules e AGENTS.md
+* Exibição da versão dinâmica no Navbar
+
 ## [1.0.0] — 2026-10-18
 
 ### 🚀 Novas Funcionalidades (Lançamento Inicial)
