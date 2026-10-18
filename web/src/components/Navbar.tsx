@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scale, Mail, Copy, Check, Users, User, ShieldCheck } from 'lucide-react';
+import { Scale, Mail, Copy, Check, Users, User, ShieldCheck, Settings, Crown, ExternalLink } from 'lucide-react';
 import { Tenant, UserProfile } from '../types';
 import versionData from '../version.json';
 
@@ -11,6 +11,7 @@ interface NavbarProps {
   activeTab: string;
   onSelectTab: (tab: string) => void;
   pendingCount: number;
+  onOpenSaaSAdmin: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,7 +21,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleSoloMode,
   activeTab,
   onSelectTab,
-  pendingCount
+  pendingCount,
+  onOpenSaaSAdmin
 }) => {
   const [copied, setCopied] = React.useState(false);
 
@@ -68,24 +70,34 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Switcher Solo vs Escritório & Perfil */}
+        {/* Acesso SuperAdmin SaaS + Switcher Solo vs Escritório + Perfil */}
         <div className="profile-actions">
+          {/* Botão de Acesso ao Painel Geral do SaaS */}
+          <button 
+            className="btn-saas-admin-trigger"
+            onClick={onOpenSaaSAdmin}
+            title="Acessar o Painel SuperAdmin Master de Gestão Global do SaaS"
+          >
+            <Crown size={15} />
+            <span>Painel SaaS Admin</span>
+          </button>
+
           <div className="mode-toggle-card">
-            <div className="mode-toggle-label">Visualização do Sistema:</div>
+            <div className="mode-toggle-label">Visualização:</div>
             <div className="mode-buttons">
               <button
                 className={`mode-btn ${isSoloMode ? 'active' : ''}`}
                 onClick={onToggleSoloMode}
               >
                 <User size={13} />
-                <span>1 Advogado (Solo)</span>
+                <span>Solo</span>
               </button>
               <button
                 className={`mode-btn ${!isSoloMode ? 'active' : ''}`}
                 onClick={onToggleSoloMode}
               >
                 <Users size={13} />
-                <span>Escritório (Equipe)</span>
+                <span>Banca</span>
               </button>
             </div>
           </div>
@@ -103,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {currentUser.googleCalendarLinked && (
                   <span className="google-sync-indicator" title="Google Agenda Sincronizada">
                     <ShieldCheck size={12} color="#10B981" />
-                    Google Sync
+                    Sync
                   </span>
                 )}
               </div>
@@ -112,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Tabs Navigation */}
+      {/* Tabs Navigation da Área do Cliente */}
       <nav className="nav-tabs">
         <button
           className={`tab-btn ${activeTab === 'inbox' ? 'active' : ''}`}
@@ -146,10 +158,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         <button
-          className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+          className={`tab-btn settings-tab ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => onSelectTab('settings')}
         >
-          <span>🏢 {isSoloMode ? 'Configurações' : 'Gestão do Escritório'}</span>
+          <Settings size={15} />
+          <span>Configurações da Banca</span>
         </button>
       </nav>
     </header>

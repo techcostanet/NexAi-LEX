@@ -5,6 +5,7 @@ import { ProcessosList } from './components/ProcessosList';
 import { PrazosAgenda } from './components/PrazosAgenda';
 import { SimuladorEmail } from './components/SimuladorEmail';
 import { ConfiguracaoEscritorio } from './components/ConfiguracaoEscritorio';
+import { SaaSAdminDashboard } from './components/SaaSAdmin/SaaSAdminDashboard';
 import { 
   mockSoloTenant, 
   mockOfficeTenant, 
@@ -18,6 +19,7 @@ import './App.css';
 export function App() {
   const [isSoloMode, setIsSoloMode] = useState(false);
   const [activeTab, setActiveTab] = useState('inbox');
+  const [isSaaSAdminView, setIsSaaSAdminView] = useState(false);
   
   const [notifications, setNotifications] = useState<CaseNotification[]>([]);
   const [deadlines, setDeadlines] = useState<DeadlineEvent[]>([]);
@@ -102,56 +104,64 @@ export function App() {
         </div>
       )}
 
-      {/* Top Navbar */}
-      <Navbar
-        tenant={currentTenant}
-        currentUser={currentUser}
-        isSoloMode={isSoloMode}
-        onToggleSoloMode={() => setIsSoloMode(!isSoloMode)}
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        pendingCount={pendingCount}
-      />
-
-      {/* Conteúdo da Aba Ativa */}
-      <main className="tab-content">
-        {activeTab === 'inbox' && (
-          <InboxIntimacoes
-            notifications={notifications}
-            onApproveNotification={handleApproveNotification}
-            isSoloMode={isSoloMode}
-          />
-        )}
-
-        {activeTab === 'cases' && (
-          <ProcessosList
-            cases={cases}
-            isSoloMode={isSoloMode}
-          />
-        )}
-
-        {activeTab === 'deadlines' && (
-          <PrazosAgenda
-            deadlines={deadlines}
-            isSoloMode={isSoloMode}
-          />
-        )}
-
-        {activeTab === 'simulator' && (
-          <SimuladorEmail
+      {/* Roteamento Condicional: Área de Gestão SaaS Admin vs Portal do Advogado Cliente */}
+      {isSaaSAdminView ? (
+        <SaaSAdminDashboard onBackToClient={() => setIsSaaSAdminView(false)} />
+      ) : (
+        <>
+          {/* Top Navbar da Área do Advogado */}
+          <Navbar
             tenant={currentTenant}
-            onEmailProcessed={handleEmailProcessed}
-          />
-        )}
-
-        {activeTab === 'settings' && (
-          <ConfiguracaoEscritorio
-            tenant={currentTenant}
-            lawyers={mockLawyers}
+            currentUser={currentUser}
             isSoloMode={isSoloMode}
+            onToggleSoloMode={() => setIsSoloMode(!isSoloMode)}
+            activeTab={activeTab}
+            onSelectTab={setActiveTab}
+            pendingCount={pendingCount}
+            onOpenSaaSAdmin={() => setIsSaaSAdminView(true)}
           />
-        )}
-      </main>
+
+          {/* Conteúdo da Aba Ativa do Cliente */}
+          <main className="tab-content">
+            {activeTab === 'inbox' && (
+              <InboxIntimacoes
+                notifications={notifications}
+                onApproveNotification={handleApproveNotification}
+                isSoloMode={isSoloMode}
+              />
+            )}
+
+            {activeTab === 'cases' && (
+              <ProcessosList
+                cases={cases}
+                isSoloMode={isSoloMode}
+              />
+            )}
+
+            {activeTab === 'deadlines' && (
+              <PrazosAgenda
+                deadlines={deadlines}
+                isSoloMode={isSoloMode}
+              />
+            )}
+
+            {activeTab === 'simulator' && (
+              <SimuladorEmail
+                tenant={currentTenant}
+                onEmailProcessed={handleEmailProcessed}
+              />
+            )}
+
+            {activeTab === 'settings' && (
+              <ConfiguracaoEscritorio
+                tenant={currentTenant}
+                lawyers={mockLawyers}
+                isSoloMode={isSoloMode}
+              />
+            )}
+          </main>
+        </>
+      )}
     </div>
   );
 }

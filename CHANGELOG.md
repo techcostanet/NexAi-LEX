@@ -6,6 +6,17 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.3.0] — 2026-10-18
+
+### ⚡ Painel SuperAdmin Master do SaaS e Central de Configuracoes da Banca
+* Criacao do Painel Master Admin do SaaS independente da tela do cliente advogado
+* Modulo Financeiro completo com MRR, ARR, fluxo de caixa e transacoes
+* Gestao integral de clientes e bancas com controle de assinaturas e bloqueio/ativacao
+* Cockpit executivo com margem bruta, custos da API Gemini e metricas unitarias
+* Central de Configuracoes da Banca dedicada com 6 modulos (Dados da Banca, Inbound, Equipe/OAB, Google Agenda, Regras CPC e Faturamento)
+* Descongestionamento da tela de trabalho do advogado para acomodar novos recursos
+* Deploy oficial no Google Firebase Hosting
+
 ## [1.2.1] — 2026-10-18
 
 ### ⚡ Hospedagem 100% Google Firebase Hosting no projeto nexai-lex

@@ -1,4 +1,4 @@
-export type TenantPlan = 'solo' | 'office' | 'pro';
+export type TenantPlan = 'solo' | 'office' | 'pro' | 'enterprise';
 
 export interface Tenant {
   id: string;
@@ -10,6 +10,15 @@ export interface Tenant {
   activeProcessesCount: number;
   monthlyNotificationsCount: number;
   createdAt: string;
+  // Campos expandidos de configuração
+  oabPrincipal?: string;
+  cnpj?: string;
+  telefone?: string;
+  endereco?: string;
+  cidadeUf?: string;
+  whatsappAlertsEnabled?: boolean;
+  alertPriorHours?: number; // 24 ou 48 horas
+  cpcCountingRule?: 'DIAS_UTEIS' | 'DIAS_CORRIDOS';
 }
 
 export type UserRole = 'ADMIN' | 'LAWYER' | 'ASSISTANT';
@@ -95,4 +104,78 @@ export interface DeadlineEvent {
   isFatal: boolean;
   status: 'PENDING' | 'DONE' | 'EXPIRED';
   responsibleLawyerName: string;
+}
+
+/* =========================================================
+   Tipos do Módulo de Administração Geral do SaaS (SuperAdmin)
+   ========================================================= */
+
+export type ClientSubscriptionStatus = 'ACTIVE' | 'TRIAL' | 'PAST_DUE' | 'BLOCKED';
+
+export interface SaaSClient {
+  id: string;
+  name: string;
+  slug: string;
+  legalEntity: string; // Razão Social / Nome completo
+  cnpjOrCpf: string;
+  contactEmail: string;
+  contactPhone: string;
+  plan: TenantPlan;
+  status: ClientSubscriptionStatus;
+  mrrValue: number; // Valor mensal pago
+  usersCount: number;
+  maxUsers: number;
+  intimationCountMonth: number;
+  maxIntimationLimit: number;
+  joinedAt: string;
+  inboundEmail: string;
+  cityState: string;
+}
+
+export interface SaaSMetrics {
+  mrr: number; // Receita recorrente mensal
+  mrrGrowthRate: number; // Percentual de crescimento
+  arr: number; // Receita anualizada
+  totalActiveTenants: number;
+  totalLawyers: number;
+  monthlyIntimationsProcessed: number;
+  geminiEstimatedCost: number; // Custo estimado da API Google Gemini
+  grossMarginPercent: number; // Margem bruta
+  churnRatePercent: number;
+  averageTicket: number;
+}
+
+export type PaymentMethod = 'PIX' | 'CREDIT_CARD' | 'BOLETO';
+export type TransactionStatus = 'PAID' | 'PENDING' | 'REFUNDED' | 'FAILED';
+
+export interface SaaSTransaction {
+  id: string;
+  clientName: string;
+  plan: TenantPlan;
+  amount: number;
+  date: string;
+  method: PaymentMethod;
+  status: TransactionStatus;
+  invoiceUrl?: string;
+}
+
+export interface SaaSPlanConfig {
+  id: TenantPlan;
+  name: string;
+  priceMonthly: number;
+  priceYearly: number;
+  maxUsers: number;
+  maxIntimationsPerMonth: number;
+  features: string[];
+  popular?: boolean;
+}
+
+export interface SaaSInfraStatus {
+  geminiLatencyMs: number;
+  geminiSuccessRate: number;
+  cloudFirestoreStatus: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+  firebaseHostingStatus: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+  inboundWebhookStatus: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+  activeTokensCount: number;
+  lastWebhookPing: string;
 }
