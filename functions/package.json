@@ -1,0 +1,22 @@
+{
+  "name": "nexai-lex-functions",
+  "version": "1.0.0",
+  "description": "Firebase Cloud Functions and Gemini AI engine for NexAi-LEX legal SaaS",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.1",
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "private": true
+}
