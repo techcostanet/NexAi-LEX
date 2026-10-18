@@ -6,6 +6,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.1.0] — 2026-10-18
+
+### ⚡ Arquitetura 100% Online Cloud Firestore e Sincronização GitHub
+* Integração nativa com Firebase Cloud Firestore em tempo real
+* Eliminação total de armazenamento local (zero localStorage)
+* Sincronização automática contínua com o repositório remoto https://github.com/techcostanet/NexAi-LEX
+* Atualização das regras permanentes do projeto
+
 ## [1.0.1] — 2026-10-18
 
 ### ⚡ Implementação do sistema de auto-versionamento e regras de deploy

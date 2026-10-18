@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { InboxIntimacoes } from './components/InboxIntimacoes';
 import { ProcessosList } from './components/ProcessosList';
@@ -8,27 +8,47 @@ import { ConfiguracaoEscritorio } from './components/ConfiguracaoEscritorio';
 import { 
   mockSoloTenant, 
   mockOfficeTenant, 
-  mockLawyers, 
-  mockCases, 
-  initialNotifications, 
-  initialDeadlines 
+  mockLawyers
 } from './mockData';
-import { CaseNotification, DeadlineEvent } from './types';
-import { CheckCircle2, BellRing } from 'lucide-react';
+import { CaseNotification, DeadlineEvent, LegalCase } from './types';
+import { firestoreService } from './services/firestoreService';
+import { CheckCircle2 } from 'lucide-react';
 import './App.css';
 
 export function App() {
   const [isSoloMode, setIsSoloMode] = useState(false);
   const [activeTab, setActiveTab] = useState('inbox');
   
-  const [notifications, setNotifications] = useState<CaseNotification[]>(initialNotifications);
-  const [deadlines, setDeadlines] = useState<DeadlineEvent[]>(initialDeadlines);
-  const [cases, setCases] = useState(mockCases);
+  const [notifications, setNotifications] = useState<CaseNotification[]>([]);
+  const [deadlines, setDeadlines] = useState<DeadlineEvent[]>([]);
+  const [cases, setCases] = useState<LegalCase[]>([]);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const currentTenant = isSoloMode ? mockSoloTenant : mockOfficeTenant;
   const currentUser = isSoloMode ? mockLawyers[0] : mockLawyers[0]; // Dr. Carlos
+
+  // Sincronização 100% Online em Tempo Real (Zero localStorage)
+  // Conecta diretamente ao Cloud Firestore para colaboração de múltiplos advogados
+  useEffect(() => {
+    const unsubNotifs = firestoreService.subscribeNotifications(currentTenant.id, (data) => {
+      setNotifications(data);
+    });
+
+    const unsubDeadlines = firestoreService.subscribeDeadlines(currentTenant.id, (data) => {
+      setDeadlines(data);
+    });
+
+    const unsubCases = firestoreService.subscribeCases(currentTenant.id, (data) => {
+      setCases(data);
+    });
+
+    return () => {
+      unsubNotifs();
+      unsubDeadlines();
+      unsubCases();
+    };
+  }, [currentTenant.id]);
 
   const pendingCount = notifications.filter(n => n.status === 'PENDING_REVIEW').length;
 
@@ -38,24 +58,14 @@ export function App() {
   };
 
   // Human-in-the-Loop: Aprovar intimação e agendar no Google Calendar
-  const handleApproveNotification = (notifId: string) => {
+  const handleApproveNotification = async (notifId: string) => {
     const target = notifications.find(n => n.id === notifId);
     if (!target) return;
 
-    setNotifications(prev => prev.map(n => {
-      if (n.id === notifId) {
-        return {
-          ...n,
-          status: 'APPROVED',
-          reviewedBy: currentUser.name,
-          reviewedAt: 'Agora mesmo',
-          calendarEventId: `cal_${Date.now()}`
-        };
-      }
-      return n;
-    }));
+    // 1. Atualiza status no Cloud Firestore online
+    await firestoreService.approveNotification(notifId, currentUser.name);
 
-    // Adiciona o prazo na agenda automaticamente
+    // 2. Adiciona o prazo no Cloud Firestore online (acessível por toda a equipe)
     const newDeadline: DeadlineEvent = {
       id: `dl_${Date.now()}`,
       tenantId: currentTenant.id,
@@ -70,16 +80,16 @@ export function App() {
       responsibleLawyerName: target.assignedLawyerName || currentUser.name
     };
 
-    setDeadlines(prev => [newDeadline, ...prev]);
+    await firestoreService.addDeadline(newDeadline);
 
-    showToast(`✓ Prazo aprovado! Evento sincronizado na Google Agenda de ${newDeadline.responsibleLawyerName}.`);
+    showToast(`✓ Prazo aprovado! Sincronizado na nuvem e Google Agenda de ${newDeadline.responsibleLawyerName}.`);
   };
 
-  // Recebe e-mail processado pelo simulador
-  const handleEmailProcessed = (newNotif: CaseNotification) => {
-    setNotifications(prev => [newNotif, ...prev]);
+  // Recebe e-mail processado pelo simulador e grava no Cloud Firestore online
+  const handleEmailProcessed = async (newNotif: CaseNotification) => {
+    await firestoreService.addNotification(newNotif);
     setActiveTab('inbox');
-    showToast(`⚡ Nova intimação recebida do tribunal e processada pelo Google Gemini!`);
+    showToast(`⚡ Nova intimação recebida e sincronizada no Cloud Firestore com sucesso!`);
   };
 
   return (

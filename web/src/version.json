@@ -1,6 +1,6 @@
 {
-  "version": "1.0.1",
-  "buildDate": "2026-10-18T16:38:21.484Z",
+  "version": "1.1.0",
+  "buildDate": "2026-10-18T16:50:02.335Z",
   "channel": "production",
-  "title": "Implementação do sistema de auto-versionamento e regras de deploy"
+  "title": "Arquitetura 100% Online Cloud Firestore e Sincronização GitHub"
 }

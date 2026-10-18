@@ -1,18 +1,15 @@
-# Regras Mandatórias: Auto-Versionamento, Deploy Contínuo e Registro no Changelog
+# Regras Mandatórias: Auto-Versionamento, Deploy Contínuo, GitHub Sync e Arquitetura 100% Online
 
 Estas regras devem ser seguidas com rigor absoluto em **todas** as interações no projeto **NexAi-LEX**:
 
 ## 1. Auto-Versionamento a Cada Deploy
-* Toda vez que ocorrer uma alteração de código (melhorias, correções de bugs, novos módulos ou refatorações), a versão do sistema deve ser incrementada automaticamente seguindo o Versionamento Semântico (`MAJOR.MINOR.PATCH`):
-  * **PATCH (`1.0.x`)**: Para correções de bugs, pequenas melhorias e ajustes de layout.
-  * **MINOR (`1.x.0`)**: Para novos módulos, novas telas e integrações adicionadas.
-  * **MAJOR (`x.0.0`)**: Para mudanças estruturais de arquitetura ou quebras de compatibilidade.
+* Toda vez que ocorrer uma alteração de código (melhorias, correções de bugs, novos módulos ou refatorações), a versão do sistema deve ser incrementada automaticamente seguindo o Versionamento Semântico (`MAJOR.MINOR.PATCH`).
 * A versão deve ser refletida em:
   - `version.json` (raiz)
   - `web/src/version.json` (frontend)
   - Tag do Git (`vX.Y.Z`)
 
-## 2. Deploy a Cada Mudança de Código
+## 2. Deploy Contínuo a Cada Mudança de Código
 * Não acumular código alterado sem versionar e realizar o deploy correspondente.
 * Após qualquer modificação, executar a rotina de validação e compilação de produção (`node scripts/deploy.js` ou `npm run build`).
 
@@ -21,3 +18,11 @@ Estas regras devem ser seguidas com rigor absoluto em **todas** as interações 
   - Número da versão e data exata do lançamento.
   - Lista clara de **Melhorias**, **Novas Funcionalidades** e **Correções de Bugs**.
   - Motivo da versão para rastreabilidade completa.
+
+## 4. Sincronização Obrigatória com o Repositório GitHub
+* Todo deploy deve enviar automaticamente as atualizações e tags Git para o repositório oficial:
+  `https://github.com/techcostanet/NexAi-LEX` (`git push origin main --tags`).
+
+## 5. Arquitetura 100% Online (Zero LocalStorage / Zero Mocks Locais)
+* **Proibido o uso de `localStorage` ou `sessionStorage`:** Nenhuma informação de processos, prazos, intimações ou perfil pode ser guardada na memória local do navegador.
+* **SaaS Multi-advogado:** Quando um advogado do escritório aprovar um prazo ou receber uma intimação, todos os outros advogados do mesmo escritório devem ver o dado atualizado em tempo real na nuvem através do **Google Cloud Firestore** (`onSnapshot`).

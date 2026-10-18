@@ -112,6 +112,15 @@ try {
   console.warn(`ℹ️ Git registro concluído ou sem alterações pendentes.`);
 }
 
+// 7. Enviar cópia e tags automaticamente para o GitHub
+console.log(`\n☁️ Enviando versão v${newVersion} para o GitHub (https://github.com/techcostanet/NexAi-LEX)...`);
+try {
+  execSync('git push origin main --tags', { stdio: 'inherit', cwd: rootDir });
+  console.log(`✓ Cópia remota sincronizada no GitHub com sucesso.`);
+} catch (pushErr) {
+  console.error(`⚠️ Atenção no push ao GitHub:`, pushErr.message);
+}
+
 console.log(`\n=================================================`);
 console.log(`✅ DEPLOY v${newVersion} CONCLUÍDO COM SUCESSO!`);
 console.log(`=================================================\n`);
