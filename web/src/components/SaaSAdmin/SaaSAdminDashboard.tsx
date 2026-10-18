@@ -24,7 +24,8 @@ import {
   UserCheck,
   ChevronRight,
   PlusCircle,
-  Percent
+  Percent,
+  LogOut
 } from 'lucide-react';
 import { 
   mockSaaSMetrics, 
@@ -33,13 +34,19 @@ import {
   mockSaaSPlans, 
   mockSaaSInfraStatus 
 } from '../../mockData';
-import { SaaSClient, TenantPlan, ClientSubscriptionStatus } from '../../types';
+import { SaaSClient, TenantPlan, ClientSubscriptionStatus, AuthUser } from '../../types';
 
 interface SaaSAdminDashboardProps {
   onBackToClient: () => void;
+  onLogout?: () => void;
+  currentUserAuth?: AuthUser;
 }
 
-export const SaaSAdminDashboard: React.FC<SaaSAdminDashboardProps> = ({ onBackToClient }) => {
+export const SaaSAdminDashboard: React.FC<SaaSAdminDashboardProps> = ({ 
+  onBackToClient,
+  onLogout,
+  currentUserAuth
+}) => {
   const [adminTab, setAdminTab] = useState<'cockpit' | 'clients' | 'financial' | 'plans' | 'infra'>('cockpit');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | ClientSubscriptionStatus>('ALL');
@@ -95,11 +102,22 @@ export const SaaSAdminDashboard: React.FC<SaaSAdminDashboardProps> = ({ onBackTo
             <button 
               onClick={onBackToClient}
               className="btn-exit-admin"
-              title="Retornar para o Portal de Trabalho do Advogado"
+              title="Visualizar como Escritório de Advocacia"
             >
               <ArrowLeft size={16} />
-              <span>Voltar ao Portal do Advogado</span>
+              <span>Ver Visão do Escritório</span>
             </button>
+
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="btn-admin-logout"
+                title="Encerrar sessão de Administrador Master"
+              >
+                <LogOut size={16} />
+                <span>Sair</span>
+              </button>
+            )}
           </div>
         </div>
 

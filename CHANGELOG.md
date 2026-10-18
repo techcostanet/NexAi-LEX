@@ -6,6 +6,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.4.0] — 2026-10-18
+
+### ⚡ Sistema de Autenticacao com Usuario e Senha (Master SaaS e Demonstracao para Clientes)
+* Criacao do sistema de autenticacao nativo com Google Firebase Auth e Cloud Firestore
+* Acesso Master exclusivo do Administrador do SaaS para contato@techcosta.net com redirecionamento direto ao Cockpit SuperAdmin
+* Acesso dedicado de demonstracao para clientes advogados com demo@nexai.com.br
+* Botoes de acesso rapido e preenchimento de 1 clique na tela de login para apresentacoes comerciais
+* Ocultacao inteligente do painel SuperAdmin para clientes da banca, preservando confidencialidade
+* Opcao de logout segura no Navbar e no topo do painel SuperAdmin
+
 ## [1.3.1] — 2026-10-18
 
 ### ⚡ Conexao oficial do App Web e Cloud Firestore no projeto nexai-lex

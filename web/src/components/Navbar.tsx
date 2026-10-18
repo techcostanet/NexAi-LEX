@@ -1,28 +1,32 @@
 import React from 'react';
-import { Scale, Mail, Copy, Check, Users, User, ShieldCheck, Settings, Crown, ExternalLink } from 'lucide-react';
-import { Tenant, UserProfile } from '../types';
+import { Scale, Mail, Copy, Check, Users, User, ShieldCheck, Settings, Crown, LogOut } from 'lucide-react';
+import { Tenant, UserProfile, AuthUser } from '../types';
 import versionData from '../version.json';
 
 interface NavbarProps {
   tenant: Tenant;
   currentUser: UserProfile;
+  currentUserAuth: AuthUser;
   isSoloMode: boolean;
   onToggleSoloMode: () => void;
   activeTab: string;
   onSelectTab: (tab: string) => void;
   pendingCount: number;
   onOpenSaaSAdmin: () => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   tenant,
   currentUser,
+  currentUserAuth,
   isSoloMode,
   onToggleSoloMode,
   activeTab,
   onSelectTab,
   pendingCount,
-  onOpenSaaSAdmin
+  onOpenSaaSAdmin,
+  onLogout
 }) => {
   const [copied, setCopied] = React.useState(false);
 
@@ -70,17 +74,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Acesso SuperAdmin SaaS + Switcher Solo vs Escritório + Perfil */}
+        {/* Acesso SuperAdmin SaaS (Apenas para Master) + Switcher Solo/Banca + Perfil + Logout */}
         <div className="profile-actions">
-          {/* Botão de Acesso ao Painel Geral do SaaS */}
-          <button 
-            className="btn-saas-admin-trigger"
-            onClick={onOpenSaaSAdmin}
-            title="Acessar o Painel SuperAdmin Master de Gestão Global do SaaS"
-          >
-            <Crown size={15} />
-            <span>Painel SaaS Admin</span>
-          </button>
+          {/* Botão de Acesso ao Painel Geral do SaaS (Exclusivo Master Admin) */}
+          {currentUserAuth.isSuperAdmin && (
+            <button 
+              className="btn-saas-admin-trigger"
+              onClick={onOpenSaaSAdmin}
+              title="Acessar o Painel SuperAdmin Master de Gestão Global do SaaS"
+            >
+              <Crown size={15} />
+              <span>Painel SaaS Admin</span>
+            </button>
+          )}
 
           <div className="mode-toggle-card">
             <div className="mode-toggle-label">Visualização:</div>
@@ -104,14 +110,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="user-badge-card">
             <img 
-              src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100'} 
-              alt={currentUser.name} 
+              src={currentUserAuth.avatarUrl || currentUser.avatarUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100'} 
+              alt={currentUserAuth.name} 
               className="user-avatar"
             />
             <div className="user-info">
-              <div className="user-name">{currentUser.name}</div>
+              <div className="user-name">{currentUserAuth.name}</div>
               <div className="user-oab">
-                <span>OAB: {currentUser.oabNumber || 'Geral'}</span>
+                <span>{currentUserAuth.oabNumber ? `OAB: ${currentUserAuth.oabNumber}` : currentUserAuth.isSuperAdmin ? 'Master SaaS' : 'Advogado'}</span>
                 {currentUser.googleCalendarLinked && (
                   <span className="google-sync-indicator" title="Google Agenda Sincronizada">
                     <ShieldCheck size={12} color="#10B981" />
@@ -120,6 +126,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
             </div>
+            <button
+              onClick={onLogout}
+              className="btn-navbar-logout"
+              title="Encerrar sessão"
+            >
+              <LogOut size={15} />
+              <span>Sair</span>
+            </button>
           </div>
         </div>
       </div>

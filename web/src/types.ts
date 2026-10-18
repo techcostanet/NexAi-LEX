@@ -179,3 +179,22 @@ export interface SaaSInfraStatus {
   activeTokensCount: number;
   lastWebhookPing: string;
 }
+
+/* =========================================================
+   Tipos de Autenticação e Sessão de Usuário
+   ========================================================= */
+
+export type AuthRole = 'SUPER_ADMIN' | 'OFFICE_ADMIN' | 'LAWYER';
+
+export interface AuthUser {
+  uid: string;
+  email: string;
+  name: string;
+  role: AuthRole;
+  isSuperAdmin: boolean;
+  tenantId: string;
+  tenantName: string;
+  oabNumber?: string;
+  avatarUrl?: string;
+}
+

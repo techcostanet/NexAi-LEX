@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
 
 // Configuração oficial do Google Firebase / Cloud Firestore
 // Vinculado ao App Web 'NexAi-LEX' (App ID: 1:23616077470:web:e4b60ba65eb1ea9838858f)
@@ -20,4 +21,8 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 // Instância oficial do Cloud Firestore
 export const db: Firestore = getFirestore(app);
 
+// Instância oficial do Firebase Authentication
+export const auth: Auth = getAuth(app);
+
 export default app;
+
