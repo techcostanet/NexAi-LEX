@@ -112,13 +112,13 @@ try {
   console.warn(`ℹ️ Git registro concluído ou sem alterações pendentes.`);
 }
 
-// 7. Publicar site no Google Firebase Hosting (Hospedagem Oficial 100% Google Cloud)
-console.log(`\n🔥 Publicando site no Google Firebase Hosting (projeto: nexai-lex)...`);
+// 7. Publicar site no Google Firebase Hosting e Cloud Firestore (100% Google Cloud)
+console.log(`\n🔥 Publicando aplicação no Google Firebase Hosting e Cloud Firestore (projeto: nexai-lex)...`);
 try {
-  execSync('npx.cmd --yes firebase deploy --only hosting --project nexai-lex', { stdio: 'inherit', cwd: rootDir });
-  console.log(`✓ Site publicado com sucesso no Google Firebase Hosting!`);
+  execSync('npx.cmd --yes firebase deploy --only hosting,firestore --project nexai-lex', { stdio: 'inherit', cwd: rootDir });
+  console.log(`✓ Aplicação e Banco de Dados Firestore sincronizados com sucesso no Google Cloud!`);
 } catch (pubErr) {
-  console.error(`❌ Erro durante o deploy no Firebase Hosting:`, pubErr.message);
+  console.error(`❌ Erro durante o deploy no Firebase:`, pubErr.message);
   process.exit(1);
 }
 

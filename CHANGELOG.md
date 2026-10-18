@@ -6,6 +6,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.3.1] — 2026-10-18
+
+### ⚡ Conexao oficial do App Web e Cloud Firestore no projeto nexai-lex
+* Leitura automatica e integracao das credenciais oficiais do App Web (App ID: 1:23616077470:web:e4b60ba65eb1ea9838858f)
+* Conexao nativa em tempo real com o banco Cloud Firestore do projeto nexai-lex
+* Criacao e deploy das regras de seguranca firestore.rules e firestore.indexes.json
+* Semeadura e sincronizacao em tempo real das colecoes notifications_inbox, deadlines e cases
+* Atualizacao do script de deploy com suporte a deploy conjunto de Hosting e Firestore
+
 ## [1.3.0] — 2026-10-18
 
 ### ⚡ Painel SuperAdmin Master do SaaS e Central de Configuracoes da Banca
