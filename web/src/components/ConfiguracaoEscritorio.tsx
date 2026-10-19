@@ -213,6 +213,46 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                     onChange={e => setBancaEnd(e.target.value)}
                   />
                 </div>
+
+                {/* E-mail de Captura Integrado na Configuração */}
+                <div className="form-group full-width" style={{ marginTop: '0.75rem', background: '#FFFDF9', border: '1px solid var(--gold-border)', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                    <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gold-dark)', fontWeight: 700, margin: 0 }}>
+                      <Mail size={16} color="#B47E20" />
+                      <span>E-mail Dedicado de Captura e Ingestão de Intimações (IA)</span>
+                    </label>
+                    <button 
+                      type="button" 
+                      onClick={() => setSubTab('inbound')}
+                      className="btn-secondary mini-btn"
+                      style={{ fontSize: '0.75rem' }}
+                    >
+                      <ExternalLink size={13} />
+                      <span>Ver Instruções para Tribunais</span>
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input 
+                      type="text" 
+                      className="text-input readonly"
+                      value={tenant.inboundEmail}
+                      readOnly
+                      style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-primary)', background: '#F8FAFC' }}
+                    />
+                    <button 
+                      type="button" 
+                      onClick={handleCopyInbound}
+                      className="btn-primary"
+                      style={{ whiteSpace: 'nowrap', padding: '0.6rem 1.1rem' }}
+                    >
+                      {copiedEmail ? <Check size={15} /> : <Copy size={15} />}
+                      <span>{copiedEmail ? 'Copiado!' : 'Copiar E-mail'}</span>
+                    </button>
+                  </div>
+                  <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '8px', display: 'block' }}>
+                    Cadastre este endereço nos sistemas dos tribunais (PJe, e-SAJ, Projudi) ou no seu convênio OAB para que o Google Gemini processe suas intimações e prazos automaticamente.
+                  </small>
+                </div>
               </div>
             </div>
           )}

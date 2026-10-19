@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scale, Mail, Copy, Check, Users, User, ShieldCheck, Settings, Crown, LogOut } from 'lucide-react';
+import { Scale, ShieldCheck, Settings, Crown, LogOut } from 'lucide-react';
 import { Tenant, UserProfile, AuthUser } from '../types';
 import versionData from '../version.json';
 
@@ -7,8 +7,6 @@ interface NavbarProps {
   tenant: Tenant;
   currentUser: UserProfile;
   currentUserAuth: AuthUser;
-  isSoloMode: boolean;
-  onToggleSoloMode: () => void;
   activeTab: string;
   onSelectTab: (tab: string) => void;
   pendingCount: number;
@@ -20,22 +18,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   tenant,
   currentUser,
   currentUserAuth,
-  isSoloMode,
-  onToggleSoloMode,
   activeTab,
   onSelectTab,
   pendingCount,
   onOpenSaaSAdmin,
   onLogout
 }) => {
-  const [copied, setCopied] = React.useState(false);
-
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(tenant.inboundEmail);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <header className="navbar-container">
       <div className="navbar-top">
@@ -55,26 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* E-mail Dedicado do Escritório (Pilar Central) */}
-        <div className="inbound-box">
-          <div className="inbound-label">
-            <Mail size={13} color="#B47E20" />
-            <span>E-MAIL DE CAPTURA DO ESCRITÓRIO:</span>
-          </div>
-          <div className="inbound-email-row">
-            <code className="inbound-email-text">{tenant.inboundEmail}</code>
-            <button 
-              onClick={handleCopyEmail}
-              className="copy-btn"
-              title="Copiar e-mail de captura para cadastrar nos tribunais"
-            >
-              {copied ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
-              <span>{copied ? 'Copiado!' : 'Copiar'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Acesso SuperAdmin SaaS (Apenas para Master) + Switcher Solo/Banca + Perfil + Logout */}
+        {/* Acesso SuperAdmin SaaS (Apenas para Master) + Perfil + Logout */}
         <div className="profile-actions">
           {/* Botão de Acesso ao Painel Geral do SaaS (Exclusivo Master Admin) */}
           {currentUserAuth.isSuperAdmin && (
@@ -87,26 +56,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Painel SaaS Admin</span>
             </button>
           )}
-
-          <div className="mode-toggle-card">
-            <div className="mode-toggle-label">Visualização:</div>
-            <div className="mode-buttons">
-              <button
-                className={`mode-btn ${isSoloMode ? 'active' : ''}`}
-                onClick={onToggleSoloMode}
-              >
-                <User size={13} />
-                <span>Solo</span>
-              </button>
-              <button
-                className={`mode-btn ${!isSoloMode ? 'active' : ''}`}
-                onClick={onToggleSoloMode}
-              >
-                <Users size={13} />
-                <span>Banca</span>
-              </button>
-            </div>
-          </div>
 
           <div className="user-badge-card">
             <img 
@@ -165,18 +114,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         <button
-          className={`tab-btn simulate-tab ${activeTab === 'simulator' ? 'active' : ''}`}
-          onClick={() => onSelectTab('simulator')}
-        >
-          <span>⚡ Simulador de E-mails (Testar IA)</span>
-        </button>
-
-        <button
           className={`tab-btn settings-tab ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => onSelectTab('settings')}
         >
           <Settings size={15} />
-          <span>Configurações da Banca</span>
+          <span>Configurações do Escritório</span>
         </button>
       </nav>
     </header>

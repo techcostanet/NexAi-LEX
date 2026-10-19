@@ -6,6 +6,13 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.5.0] — 2026-10-19
+
+### ⚡ E-mail de Captura em Configuracoes, Remocao do Simulador e Modo Solo/Banca por Plano SaaS
+* E-mail de captura movido da Navbar para Configuracoes com copia rapida e guia detalhado
+* Remocao da aba/botao do Simulador de E-mails da barra principal do cliente
+* Remocao do seletor manual Solo/Banca da tela com determinacao automatica pelo plano SaaS adquirido
+
 ## [1.4.0] — 2026-10-18
 
 ### ⚡ Sistema de Autenticacao com Usuario e Senha (Master SaaS e Demonstracao para Clientes)

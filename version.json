@@ -1,6 +1,6 @@
 {
-  "version": "1.4.0",
-  "buildDate": "2026-10-18T23:56:57.616Z",
+  "version": "1.5.0",
+  "buildDate": "2026-10-19T23:36:29.827Z",
   "channel": "production",
-  "title": "Sistema de Autenticacao com Usuario e Senha (Master SaaS e Demonstracao para Clientes)"
+  "title": "E-mail de Captura em Configuracoes, Remocao do Simulador e Modo Solo/Banca por Plano SaaS"
 }

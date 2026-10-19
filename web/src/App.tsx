@@ -3,7 +3,6 @@ import { Navbar } from './components/Navbar';
 import { InboxIntimacoes } from './components/InboxIntimacoes';
 import { ProcessosList } from './components/ProcessosList';
 import { PrazosAgenda } from './components/PrazosAgenda';
-import { SimuladorEmail } from './components/SimuladorEmail';
 import { ConfiguracaoEscritorio } from './components/ConfiguracaoEscritorio';
 import { SaaSAdminDashboard } from './components/SaaSAdmin/SaaSAdminDashboard';
 import { LoginPage } from './components/LoginPage';
@@ -23,7 +22,6 @@ export function App() {
   const [userAuth, setUserAuth] = useState<AuthUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const [isSoloMode, setIsSoloMode] = useState(false);
   const [activeTab, setActiveTab] = useState('inbox');
   const [isSaaSAdminView, setIsSaaSAdminView] = useState(false);
   
@@ -33,8 +31,10 @@ export function App() {
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const currentTenant = isSoloMode ? mockSoloTenant : mockOfficeTenant;
-  const currentUser = isSoloMode ? mockLawyers[0] : mockLawyers[0]; // Dr. Carlos
+  // Modo de visualização determinado estritamente pelo Plano SaaS contratado pelo escritório
+  const currentTenant = userAuth?.tenantId === 'tenant_solo' ? mockSoloTenant : mockOfficeTenant;
+  const isSoloMode = currentTenant.plan === 'solo';
+  const currentUser = mockLawyers[0]; // Advogado titular / Dr. Carlos
 
   // Monitora a sessão de autenticação do usuário
   useEffect(() => {
@@ -133,13 +133,6 @@ export function App() {
     showToast(`✓ Prazo aprovado! Sincronizado na nuvem e Google Agenda de ${newDeadline.responsibleLawyerName}.`);
   };
 
-  // Recebe e-mail processado pelo simulador e grava no Cloud Firestore online
-  const handleEmailProcessed = async (newNotif: CaseNotification) => {
-    await firestoreService.addNotification(newNotif);
-    setActiveTab('inbox');
-    showToast(`⚡ Nova intimação recebida e sincronizada no Cloud Firestore com sucesso!`);
-  };
-
   // Tela de Carregamento Inicial do Firebase Auth
   if (authLoading) {
     return (
@@ -187,8 +180,6 @@ export function App() {
             tenant={currentTenant}
             currentUser={currentUser}
             currentUserAuth={userAuth}
-            isSoloMode={isSoloMode}
-            onToggleSoloMode={() => setIsSoloMode(!isSoloMode)}
             activeTab={activeTab}
             onSelectTab={setActiveTab}
             pendingCount={pendingCount}
@@ -217,13 +208,6 @@ export function App() {
               <PrazosAgenda
                 deadlines={deadlines}
                 isSoloMode={isSoloMode}
-              />
-            )}
-
-            {activeTab === 'simulator' && (
-              <SimuladorEmail
-                tenant={currentTenant}
-                onEmailProcessed={handleEmailProcessed}
               />
             )}
 
