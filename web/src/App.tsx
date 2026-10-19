@@ -130,10 +130,10 @@ export function App() {
 
     await firestoreService.addDeadline(newDeadline);
 
-    showToast(`✓ Prazo aprovado! Sincronizado na nuvem e Google Agenda de ${newDeadline.responsibleLawyerName}.`);
+    showToast(`✓ Prazo aprovado com sucesso!`);
   };
 
-  // Tela de Carregamento Inicial do Firebase Auth
+  // Tela de Carregamento Inicial
   if (authLoading) {
     return (
       <div className="auth-loading-screen">
@@ -144,7 +144,7 @@ export function App() {
           </div>
           <div className="auth-loading-spinner-row">
             <Loader2 size={24} className="animate-spin" color="#B47E20" />
-            <span>Verificando credenciais de acesso na nuvem...</span>
+            <span>Carregando...</span>
           </div>
         </div>
       </div>

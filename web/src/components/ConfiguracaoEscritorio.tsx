@@ -76,16 +76,16 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             <Sliders size={22} color="#B47E20" />
           </div>
           <div>
-            <h2 className="section-title">Central de Configurações da Banca</h2>
+            <h2 className="section-title">Configurações</h2>
             <p className="section-desc">
-              Gerencie os dados cadastrais do escritório, e-mail de captura, equipe de advogados e regras de prazos em um único local centralizado.
+              Gerencie as informações do seu escritório, equipe e regras de prazos.
             </p>
           </div>
         </div>
 
         <button onClick={handleSave} className="btn-primary">
           <Save size={16} />
-          <span>Salvar Alterações</span>
+          <span>Salvar</span>
         </button>
       </div>
 
@@ -98,7 +98,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('banca')}
           >
             <Building size={16} />
-            <span>Dados da Banca</span>
+            <span>Escritório</span>
           </button>
 
           <button 
@@ -106,7 +106,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('inbound')}
           >
             <Mail size={16} />
-            <span>E-mail de Captura</span>
+            <span>E-mail</span>
           </button>
 
           {!isSoloMode && (
@@ -115,7 +115,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
               onClick={() => setSubTab('team')}
             >
               <Users size={16} />
-              <span>Equipe & OABs ({lawyers.length})</span>
+              <span>Equipe</span>
             </button>
           )}
 
@@ -124,7 +124,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('integrations')}
           >
             <Calendar size={16} />
-            <span>Google Agenda & Alertas</span>
+            <span>Agenda</span>
           </button>
 
           <button 
@@ -132,7 +132,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('rules')}
           >
             <ShieldCheck size={16} />
-            <span>Contagem de Prazos (CPC)</span>
+            <span>Prazos</span>
           </button>
 
           <button 
@@ -140,22 +140,22 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('plan')}
           >
             <CreditCard size={16} />
-            <span>Meu Plano & Faturas</span>
+            <span>Plano</span>
           </button>
         </aside>
 
         {/* Área de Conteúdo da Configuração Selecionada */}
         <section className="settings-main-pane">
           
-          {/* 1. DADOS DA BANCA */}
+          {/* 1. DADOS DO ESCRITÓRIO */}
           {subTab === 'banca' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">Dados Cadastrais da Banca Jurídica</h3>
-              <p className="settings-pane-desc">Informações do escritório utilizadas nos relatórios e roteamentos judiciais.</p>
+              <h3 className="settings-pane-title">Escritório</h3>
+              <p className="settings-pane-desc">Informações cadastrais utilizadas nos relatórios e roteamentos judiciais.</p>
               
               <div className="form-grid-2col">
                 <div className="form-group">
-                  <label className="input-label">Nome da Sociedade / Advogado:</label>
+                  <label className="input-label">Nome:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -165,7 +165,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">Identificador Único (Slug):</label>
+                  <label className="input-label">Código:</label>
                   <input 
                     type="text" 
                     className="text-input readonly"
@@ -175,7 +175,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">CNPJ da Sociedade de Advogados:</label>
+                  <label className="input-label">CNPJ:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -185,7 +185,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">OAB Principal do Escritório:</label>
+                  <label className="input-label">OAB:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -195,7 +195,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">Telefone / WhatsApp Comercial:</label>
+                  <label className="input-label">Telefone:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -205,7 +205,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group full-width">
-                  <label className="input-label">Endereço da Sede do Escritório:</label>
+                  <label className="input-label">Endereço:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -219,7 +219,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
                     <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gold-dark)', fontWeight: 700, margin: 0 }}>
                       <Mail size={16} color="#B47E20" />
-                      <span>E-mail Dedicado de Captura e Ingestão de Intimações (IA)</span>
+                      <span>E-mail:</span>
                     </label>
                     <button 
                       type="button" 
@@ -228,7 +228,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                       style={{ fontSize: '0.75rem' }}
                     >
                       <ExternalLink size={13} />
-                      <span>Ver Instruções para Tribunais</span>
+                      <span>Instruções</span>
                     </button>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -246,23 +246,23 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                       style={{ whiteSpace: 'nowrap', padding: '0.6rem 1.1rem' }}
                     >
                       {copiedEmail ? <Check size={15} /> : <Copy size={15} />}
-                      <span>{copiedEmail ? 'Copiado!' : 'Copiar E-mail'}</span>
+                      <span>{copiedEmail ? 'Copiado' : 'Copiar'}</span>
                     </button>
                   </div>
                   <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '8px', display: 'block' }}>
-                    Cadastre este endereço nos sistemas dos tribunais (PJe, e-SAJ, Projudi) ou no seu convênio OAB para que o Google Gemini processe suas intimações e prazos automaticamente.
+                    Cadastre este endereço nos sistemas dos tribunais (PJe, e-SAJ, Projudi) ou convênios OAB para recebimento automático.
                   </small>
                 </div>
               </div>
             </div>
           )}
 
-          {/* 2. E-MAIL DE CAPTURA DEDICADO */}
+          {/* 2. E-MAIL DE RECEBIMENTO */}
           {subTab === 'inbound' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">E-mail de Captura Dedicado (Inbound Gateway)</h3>
+              <h3 className="settings-pane-title">E-mail</h3>
               <p className="settings-pane-desc">
-                Este é o endereço de e-mail exclusivo da sua banca. Todas as publicações e intimações enviadas para ele são automaticamente lidas e processadas pelo Google Gemini 1.5.
+                Endereço exclusivo para recebimento e processamento automático de publicações e intimações judiciais.
               </p>
 
               <div className="inbound-highlight-box">
@@ -270,7 +270,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                   <code className="inbound-target-email">{tenant.inboundEmail}</code>
                   <button onClick={handleCopyInbound} className="btn-primary mini-btn">
                     {copiedEmail ? <Check size={14} /> : <Copy size={14} />}
-                    <span>{copiedEmail ? 'Copiado!' : 'Copiar E-mail'}</span>
+                    <span>{copiedEmail ? 'Copiado' : 'Copiar'}</span>
                   </button>
                 </div>
               </div>
@@ -279,32 +279,32 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 <h4 className="guide-title">Como vincular aos tribunais e convênios:</h4>
                 <ol className="guide-steps-list">
                   <li>
-                    <strong>Sistemas dos Tribunais (PJe, e-SAJ, Projudi, Eproc):</strong> Cadastre este e-mail no seu perfil de advogado como endereço para comunicações eletrônicas.
+                    <strong>Tribunais (PJe, e-SAJ, Projudi, Eproc):</strong> Cadastre este e-mail no seu perfil de advogado para comunicações eletrônicas.
                   </li>
                   <li>
-                    <strong>Convênio OAB / Recortes / AASP:</strong> Adicione este endereço como destinatário secundário para receber as publicações do Diário Oficial.
+                    <strong>Convênio OAB / Recortes / AASP:</strong> Adicione este endereço como destinatário secundário para receber as publicações.
                   </li>
                   <li>
-                    <strong>Redirecionamento Automático:</strong> Crie uma regra no seu Outlook ou Gmail corporativo encaminhando e-mails de tribunais para este endereço.
+                    <strong>Redirecionamento:</strong> Crie uma regra no seu e-mail corporativo encaminhando mensagens de tribunais para este endereço.
                   </li>
                 </ol>
               </div>
             </div>
           )}
 
-          {/* 3. EQUIPE & ROTEAMENTO POR OAB */}
+          {/* 3. EQUIPE & OAB */}
           {subTab === 'team' && !isSoloMode && (
             <div className="settings-section-card">
               <div className="section-flex-header">
                 <div>
-                  <h3 className="settings-pane-title">Advogados & Chaves de Roteamento por OAB</h3>
+                  <h3 className="settings-pane-title">Equipe</h3>
                   <p className="settings-pane-desc">
-                    Quando o Gemini detecta uma intimação, ele lê a OAB citada no despacho e direciona automaticamente a tarefa para o advogado correto.
+                    Direcionamento automático de intimações e prazos pela OAB de cada advogado.
                   </p>
                 </div>
                 <button className="btn-secondary mini-btn">
                   <UserPlus size={14} />
-                  <span>Convidar Advogado</span>
+                  <span>Convidar</span>
                 </button>
               </div>
 
@@ -319,8 +319,8 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                         <span className="oab-pill">OAB: <strong>{lawyer.oabNumber || 'Geral'}</strong></span>
                         <span className="role-pill">{lawyer.role}</span>
                         {lawyer.googleCalendarLinked && (
-                          <span className="sync-pill" title="Sincronizado com Google Agenda">
-                            <CheckCircle2 size={12} color="#10B981" /> Google Sync
+                          <span className="sync-pill" title="Agenda conectada">
+                            <CheckCircle2 size={12} color="#10B981" /> Agenda
                           </span>
                         )}
                       </div>
@@ -331,21 +331,21 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             </div>
           )}
 
-          {/* 4. INTEGRAÇÕES GOOGLE & ALERTAS */}
+          {/* 4. AGENDA & ALERTAS */}
           {subTab === 'integrations' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">Integrações Cloud & Notificações</h3>
-              <p className="settings-pane-desc">Configure os canais de recebimento de alertas e a sincronização em nuvem.</p>
+              <h3 className="settings-pane-title">Agenda</h3>
+              <p className="settings-pane-desc">Configure a sincronização da agenda oficial e notificações de alerta.</p>
 
               <div className="toggles-list">
                 <div className="toggle-item-row">
                   <div className="toggle-info">
                     <div className="toggle-title">
                       <Calendar size={18} color="#B47E20" />
-                      <span>Sincronização com Google Agenda (Google Calendar)</span>
+                      <span>Google Agenda</span>
                     </div>
                     <div className="toggle-desc">
-                      Prazos fatais aprovados pela banca entram automaticamente na agenda oficial do advogado responsável.
+                      Prazos aprovados entram automaticamente na agenda oficial do advogado responsável.
                     </div>
                   </div>
                   <input 
@@ -360,10 +360,10 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                   <div className="toggle-info">
                     <div className="toggle-title">
                       <Bell size={18} color="#B47E20" />
-                      <span>Alertas de Prazo Fatal por WhatsApp</span>
+                      <span>WhatsApp</span>
                     </div>
                     <div className="toggle-desc">
-                      Notificações instantâneas enviadas no celular do advogado antes da expiração do prazo judicial.
+                      Alertas enviados no celular antes da data fatal do prazo.
                     </div>
                   </div>
                   <input 
@@ -378,10 +378,10 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                   <div className="toggle-info">
                     <div className="toggle-title">
                       <Clock size={18} color="#B47E20" />
-                      <span>Antecedência Mínima do Alerta Crítico</span>
+                      <span>Antecedência</span>
                     </div>
                     <div className="toggle-desc">
-                      Defina com quantas horas de antecedência o sistema deve emitir avisos de risco de preclusão.
+                      Tempo prévio para emissão dos avisos de prazo fatal.
                     </div>
                   </div>
                   <select 
@@ -389,20 +389,20 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                     onChange={e => setAlertHours(Number(e.target.value))}
                     className="settings-select"
                   >
-                    <option value={24}>24 horas antes da data fatal</option>
-                    <option value={48}>48 horas antes da data fatal (Recomendado)</option>
-                    <option value={72}>72 horas antes da data fatal</option>
+                    <option value={24}>24 horas antes</option>
+                    <option value={48}>48 horas antes</option>
+                    <option value={72}>72 horas antes</option>
                   </select>
                 </div>
               </div>
             </div>
           )}
 
-          {/* 5. REGRAS DE CONTAGEM DE PRAZOS (CPC/CLT) */}
+          {/* 5. REGRAS DE PRAZOS */}
           {subTab === 'rules' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">Regras de Contagem de Prazos Processuais</h3>
-              <p className="settings-pane-desc">Definição dos critérios que o motor de inteligência processual utiliza para estimar datas fatais.</p>
+              <h3 className="settings-pane-title">Prazos</h3>
+              <p className="settings-pane-desc">Critérios de contagem utilizados para calcular as datas fatais.</p>
 
               <div className="counting-rules-options">
                 <label className={`rule-option-card ${countingRule === 'DIAS_UTEIS' ? 'selected' : ''}`}>
@@ -414,8 +414,8 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                     onChange={() => setCountingRule('DIAS_UTEIS')}
                   />
                   <div>
-                    <strong>Padrão CPC — Dias Úteis (Art. 219 do CPC)</strong>
-                    <p>Calcula prazos judiciais considerando apenas dias úteis, suspendendo contagem em sábados, domingos e feriados nacionais.</p>
+                    <strong>Dias Úteis (Art. 219 CPC)</strong>
+                    <p>Calcula prazos considerando apenas dias úteis, suspendendo contagem em fins de semana e feriados.</p>
                   </div>
                 </label>
 
@@ -428,8 +428,8 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                     onChange={() => setCountingRule('DIAS_CORRIDOS')}
                   />
                   <div>
-                    <strong>Dias Corridos (Penal / Juizados Especiais Específicos)</strong>
-                    <p>Contagem contínua sem interrupção de fins de semana (aplicável a matéria criminal e prazos materiais decadenciais).</p>
+                    <strong>Dias Corridos (Penal / Juizados)</strong>
+                    <p>Contagem contínua sem interrupção de fins de semana.</p>
                   </div>
                 </label>
               </div>
@@ -443,41 +443,41 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             </div>
           )}
 
-          {/* 6. MEU PLANO & FATURAS */}
+          {/* 6. MEU PLANO */}
           {subTab === 'plan' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">Assinatura & Faturamento da Banca</h3>
-              <p className="settings-pane-desc">Informações do plano contratado e histórico de mensalidades.</p>
+              <h3 className="settings-pane-title">Plano</h3>
+              <p className="settings-pane-desc">Detalhes da assinatura e faturamento do escritório.</p>
 
               <div className="client-plan-box">
                 <div className="client-plan-header">
                   <div>
-                    <span className="plan-badge-tag">{isSoloMode ? 'PLANO SOLO' : 'PLANO ESCRITÓRIO ASSOCIADOS'}</span>
+                    <span className="plan-badge-tag">{isSoloMode ? 'SOLO' : 'ESCRITÓRIO'}</span>
                     <div className="client-plan-price">
                       {isSoloMode ? 'R$ 97,00' : 'R$ 249,00'} <small>/ mês</small>
                     </div>
                   </div>
-                  <span className="plan-active-status">● Assinatura Ativa</span>
+                  <span className="plan-active-status">● Ativo</span>
                 </div>
 
                 <div className="client-plan-details">
                   <div className="plan-detail-row">
-                    <span>Usuários Cadastrados:</span>
+                    <span>Usuários:</span>
                     <strong>{isSoloMode ? '1 Advogado' : `${lawyers.length} de 4 Advogados`}</strong>
                   </div>
                   <div className="plan-detail-row">
-                    <span>Próxima Cobrança Automática:</span>
+                    <span>Renovação:</span>
                     <strong>15 de Novembro de 2026</strong>
                   </div>
                   <div className="plan-detail-row">
-                    <span>Forma de Pagamento:</span>
-                    <strong>Cartão de Crédito terminado em 4092</strong>
+                    <span>Pagamento:</span>
+                    <strong>Cartão de Crédito</strong>
                   </div>
                 </div>
 
                 <div className="client-plan-actions">
-                  <button className="btn-secondary mini-btn">Alterar Cartão</button>
-                  <button className="btn-primary mini-btn">Fazer Upgrade de Plano</button>
+                  <button className="btn-secondary mini-btn">Cartão</button>
+                  <button className="btn-primary mini-btn">Upgrade</button>
                 </div>
               </div>
             </div>

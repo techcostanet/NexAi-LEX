@@ -6,6 +6,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.6.0] — 2026-10-19
+
+### ⚡ Padronizacao de Campos com 1 Palavra e Remocao de Jargoes Tecnicos
+* Padronizacao de todos os campos, abas e rotulos com 1 unica palavra clara e concisa
+* Remocao de termos tecnicos de TI da visao do advogado, adotando linguagem 100% juridica e executiva
+* Simplificacao das abas principais (Intimacoes, Processos, Prazos, Configuracoes)
+* Refinamento dos formularios do escritorio, tabela de processos e tela de login
+
 ## [1.5.0] — 2026-10-19
 
 ### ⚡ E-mail de Captura em Configuracoes, Remocao do Simulador e Modo Solo/Banca por Plano SaaS

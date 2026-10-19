@@ -78,18 +78,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             <span className="login-version-tag">v{versionData.version}</span>
           </h1>
           <p className="login-subtitle">
-            Inteligência Processual & Ingestão Autônoma de Intimações Jurídicas
+            Gestão Jurídica Inteligente
           </p>
           <div className="cloud-security-pill">
             <ShieldCheck size={14} color="#10B981" />
-            <span>Google Firebase Authentication • Cloud Firestore 100% Online</span>
+            <span>Ambiente Seguro e Criptografado</span>
           </div>
         </div>
 
         {/* Formulário de Login Principal */}
         <div className="login-card">
-          <h2 className="login-card-title">Acesso à Plataforma</h2>
-          <p className="login-card-desc">Informe seu e-mail e senha cadastrados para acessar o sistema.</p>
+          <h2 className="login-card-title">Acesso</h2>
+          <p className="login-card-desc">Informe suas credenciais para entrar no sistema.</p>
 
           {errorMessage && (
             <div className="login-error-alert">
@@ -100,7 +100,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="login-field">
-              <label htmlFor="login-email">E-mail de Acesso</label>
+              <label htmlFor="login-email">E-mail</label>
               <div className="login-input-box">
                 <Mail size={18} className="login-input-icon" />
                 <input
@@ -149,11 +149,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Autenticando na Nuvem...</span>
+                  <span>Entrando...</span>
                 </>
               ) : (
                 <>
-                  <span>Entrar no Sistema</span>
+                  <span>Entrar</span>
                   <ArrowRight size={18} />
                 </>
               )}
@@ -162,7 +162,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
           {/* Divisor de Acessos Rápidos */}
           <div className="login-divider">
-            <span>Acessos Rápidos & Demonstração</span>
+            <span>Acesso Rápido</span>
           </div>
 
           {/* Cards de Acesso Prontos (SuperAdmin & Demo Clientes) */}
@@ -174,8 +174,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   <Crown size={16} />
                 </div>
                 <div>
-                  <div className="quick-card-title">Administração SaaS (Master)</div>
-                  <div className="quick-card-badge">TechCosta SuperAdmin</div>
+                  <div className="quick-card-title">Administração</div>
+                  <div className="quick-card-badge">SuperAdmin</div>
                 </div>
               </div>
 
@@ -185,7 +185,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               </div>
 
               <p className="quick-card-description">
-                Acesso irrestrito a faturamento, métricas MRR, criação e controle de bancas clientes.
+                Acesso global a faturamento, métricas e controle de escritórios clientes.
               </p>
 
               <button
@@ -195,7 +195,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 disabled={loading}
               >
                 <Sparkles size={14} />
-                <span>Entrar como SuperAdmin Master</span>
+                <span>Administrador</span>
               </button>
             </div>
 
@@ -206,7 +206,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   <Building2 size={16} />
                 </div>
                 <div>
-                  <div className="quick-card-title">Demonstração para Clientes</div>
+                  <div className="quick-card-title">Advogado</div>
                   <div className="quick-card-badge">Costa & Silva Advogados</div>
                 </div>
               </div>
@@ -217,7 +217,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               </div>
 
               <p className="quick-card-description">
-                Visão real do escritório de advocacia: intimações, prazos CPC e dossiês de processos.
+                Visão oficial do escritório: intimações, prazos e processos.
               </p>
 
               <button
@@ -227,7 +227,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 disabled={loading}
               >
                 <CheckCircle2 size={14} />
-                <span>Entrar como Escritório Demo</span>
+                <span>Advogado</span>
               </button>
             </div>
           </div>
@@ -235,9 +235,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
         {/* Rodapé de Segurança */}
         <div className="login-footer">
-          <p>© 2026 NexAi-LEX • Tecnologia Jurídica Autônoma • Infraestrutura Google Cloud</p>
+          <p>© 2026 NexAi-LEX • Gestão Jurídica Inteligente</p>
           <p className="login-footer-sub">
-            Conexão Segura SSL 256 bits • Sem dados locais (Zero LocalStorage) • Multi-tenant em Tempo Real
+            Conexão Segura SSL 256 bits • Proteção e Sigilo de Dados em Nuvem
           </p>
         </div>
       </div>

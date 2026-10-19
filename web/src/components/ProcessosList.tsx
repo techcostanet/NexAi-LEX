@@ -42,9 +42,9 @@ export const ProcessosList: React.FC<ProcessosListProps> = ({
     <div className="cases-container glass-panel">
       <div className="cases-header">
         <div>
-          <h2 className="section-title">Processos e Dossiês Virtuais</h2>
+          <h2 className="section-title">Processos</h2>
           <p className="section-desc">
-            Organização centralizada de todas as pastas judiciais vinculadas às intimações recebidas.
+            Pastas judiciais vinculadas às intimações recebidas.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export const ProcessosList: React.FC<ProcessosListProps> = ({
           <input
             type="text"
             className="search-input"
-            placeholder="Buscar por CNJ, cliente ou tribunal..."
+            placeholder="Buscar..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -64,11 +64,11 @@ export const ProcessosList: React.FC<ProcessosListProps> = ({
         <table className="cases-table">
           <thead>
             <tr>
-              <th>Número CNJ Unificado</th>
-              <th>Cliente / Requerente</th>
-              <th>Tribunal & Vara</th>
+              <th>Processo</th>
+              <th>Cliente</th>
+              <th>Tribunal</th>
               <th>Área</th>
-              {!isSoloMode && <th>Advogado Responsável</th>}
+              {!isSoloMode && <th>Responsável</th>}
               <th>Andamentos</th>
               <th>Status</th>
             </tr>

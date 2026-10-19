@@ -42,9 +42,9 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
       <div className="inbox-list-col">
         <div className="inbox-list-header">
           <div>
-            <h2 className="section-title">Inbox de Intimações</h2>
+            <h2 className="section-title">Intimações</h2>
             <p className="section-desc">
-              E-mails capturados e estruturados automaticamente pelo <strong>Google Gemini</strong>.
+              Publicações recebidas e processadas automaticamente.
             </p>
           </div>
 
@@ -96,7 +96,7 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
                   </div>
 
                   <div className="notif-cnj">
-                    {notif.extractedData.cnjNumber || 'CNJ não especificado'}
+                    {notif.extractedData.cnjNumber || 'Sem número'}
                   </div>
 
                   <div className="notif-court">
@@ -111,12 +111,12 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
                     {isFatal ? (
                       <span className="fatal-badge">
                         <ShieldAlert size={12} />
-                        Prazo: {notif.extractedData.suggestedDeadlineDays}d (Fatal)
+                        Fatal: {notif.extractedData.suggestedDeadlineDays}d
                       </span>
                     ) : (
                       <span className="gold-badge">
                         <Clock size={12} />
-                        Prazo: {notif.extractedData.suggestedDeadlineDays}d úteis
+                        Prazo: {notif.extractedData.suggestedDeadlineDays}d
                       </span>
                     )}
 
@@ -168,12 +168,12 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
                   onClick={() => onApproveNotification(selectedNotif.id)}
                 >
                   <CheckCircle2 size={16} />
-                  <span>Aprovar Prazo & Agendar no Google</span>
+                  <span>Aprovar</span>
                 </button>
               ) : (
                 <div className="status-approved-box">
                   <CheckCircle2 size={16} color="#10B981" />
-                  <span>Prazo Confirmado na Google Agenda</span>
+                  <span>Aprovado</span>
                 </div>
               )}
             </div>
@@ -185,11 +185,11 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               </div>
               <div className="banner-content">
                 <div className="banner-title">
-                  {selectedNotif.extractedData.isFatalDeadline ? 'PRAZO FATAL IDENTIFICADO' : 'Prazo Processual'}
+                  {selectedNotif.extractedData.isFatalDeadline ? 'FATAL' : 'PRAZO'}
                 </div>
                 <div className="banner-dates">
                   <strong>{selectedNotif.extractedData.suggestedDeadlineDays} dias úteis</strong>
-                  <span> — Limite Estimado: <strong>{selectedNotif.extractedData.estimatedFatalDate}</strong></span>
+                  <span> — Limite: <strong>{selectedNotif.extractedData.estimatedFatalDate}</strong></span>
                 </div>
                 <div className="banner-subtext">
                   Cálculo automático de dias úteis pelo CPC com suspensão em fins de semana e feriados.
@@ -202,28 +202,28 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               <div className="lawyer-routing-box">
                 <div className="routing-label">
                   <UserCheck size={14} color="#B47E20" />
-                  <span>Roteamento Inteligente por OAB:</span>
+                  <span>Responsável:</span>
                 </div>
                 <div className="routing-value">
-                  OAB citada no tribunal: <strong>{selectedNotif.extractedData.lawyerOAB || 'Não detectada'}</strong>
+                  OAB: <strong>{selectedNotif.extractedData.lawyerOAB || 'Geral'}</strong>
                   {selectedNotif.assignedLawyerName && (
-                    <span> ➔ Atribuído a: <span className="highlight-lawyer">{selectedNotif.assignedLawyerName}</span></span>
+                    <span> ➔ <span className="highlight-lawyer">{selectedNotif.assignedLawyerName}</span></span>
                   )}
                 </div>
               </div>
             )}
 
-            {/* Análise Inteligente com Gemini */}
+            {/* Análise Inteligente */}
             <div className="gemini-analysis-section">
               <div className="gemini-header">
                 <Sparkles size={16} color="#B47E20" />
-                <span>Resumo Executivo Gerado por IA (Google Gemini 1.5)</span>
+                <span>Resumo</span>
               </div>
               <p className="gemini-summary-text">
                 {selectedNotif.extractedData.summary}
               </p>
 
-              <div className="keypoints-title">Pontos de Atenção Críticos:</div>
+              <div className="keypoints-title">Destaques:</div>
               <ul className="keypoints-list">
                 {selectedNotif.extractedData.keyPoints.map((pt, idx) => (
                   <li key={idx}>
@@ -234,7 +234,7 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               </ul>
 
               <div className="recommended-action-box">
-                <div className="action-tag">AÇÃO RECOMENDADA:</div>
+                <div className="action-tag">AÇÃO:</div>
                 <div className="action-text">{selectedNotif.extractedData.recommendedAction}</div>
               </div>
             </div>
@@ -243,7 +243,7 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
             <div className="raw-email-section">
               <div className="raw-email-header">
                 <FileText size={14} />
-                <span>Teor Original do E-mail / DJE Recebido:</span>
+                <span>Teor:</span>
               </div>
               <pre className="raw-email-content">
                 {selectedNotif.rawBody}

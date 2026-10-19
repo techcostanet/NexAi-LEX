@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 v{versionData.version}
               </span>
             </div>
-            <div className="brand-subtitle">Inteligência Processual & Ingestão de Intimações</div>
+            <div className="brand-subtitle">Gestão Jurídica Inteligente</div>
           </div>
         </div>
 
@@ -50,10 +50,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button 
               className="btn-saas-admin-trigger"
               onClick={onOpenSaaSAdmin}
-              title="Acessar o Painel SuperAdmin Master de Gestão Global do SaaS"
+              title="Acessar o Painel de Gestão Global"
             >
               <Crown size={15} />
-              <span>Painel SaaS Admin</span>
+              <span>Administração</span>
             </button>
           )}
 
@@ -66,11 +66,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="user-info">
               <div className="user-name">{currentUserAuth.name}</div>
               <div className="user-oab">
-                <span>{currentUserAuth.oabNumber ? `OAB: ${currentUserAuth.oabNumber}` : currentUserAuth.isSuperAdmin ? 'Master SaaS' : 'Advogado'}</span>
+                <span>{currentUserAuth.oabNumber ? `OAB: ${currentUserAuth.oabNumber}` : currentUserAuth.isSuperAdmin ? 'Administrador' : 'Advogado'}</span>
                 {currentUser.googleCalendarLinked && (
-                  <span className="google-sync-indicator" title="Google Agenda Sincronizada">
+                  <span className="google-sync-indicator" title="Google Agenda Conectada">
                     <ShieldCheck size={12} color="#10B981" />
-                    Sync
+                    Conectada
                   </span>
                 )}
               </div>
@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`tab-btn ${activeTab === 'inbox' ? 'active' : ''}`}
           onClick={() => onSelectTab('inbox')}
         >
-          <span>📥 Inbox de Intimações</span>
+          <span>📥 Intimações</span>
           {pendingCount > 0 && (
             <span className="tab-counter">{pendingCount}</span>
           )}
@@ -103,14 +103,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           className={`tab-btn ${activeTab === 'cases' ? 'active' : ''}`}
           onClick={() => onSelectTab('cases')}
         >
-          <span>📁 Processos & Dossiês</span>
+          <span>📁 Processos</span>
         </button>
 
         <button
           className={`tab-btn ${activeTab === 'deadlines' ? 'active' : ''}`}
           onClick={() => onSelectTab('deadlines')}
         >
-          <span>📅 Prazos & Agenda</span>
+          <span>📅 Prazos</span>
         </button>
 
         <button
@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={() => onSelectTab('settings')}
         >
           <Settings size={15} />
-          <span>Configurações do Escritório</span>
+          <span>Configurações</span>
         </button>
       </nav>
     </header>

@@ -24,17 +24,17 @@ export const PrazosAgenda: React.FC<PrazosAgendaProps> = ({
     <div className="deadlines-container glass-panel">
       <div className="deadlines-header">
         <div>
-          <h2 className="section-title">Controle de Prazos Fatais & Google Agenda</h2>
+          <h2 className="section-title">Prazos</h2>
           <p className="section-desc">
-            Todos os prazos aprovados pela equipe são sincronizados automaticamente com o Google Calendar.
+            Controle oficial de prazos processuais e audiências do escritório.
           </p>
         </div>
 
         <div className="google-sync-card">
           <ShieldCheck size={18} color="#10B981" />
           <div>
-            <div className="sync-title">Sincronização Google Ativa</div>
-            <div className="sync-desc">Notificações e lembretes 48h antes da data fatal</div>
+            <div className="sync-title">Agenda Conectada</div>
+            <div className="sync-desc">Lembretes automáticos</div>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@ export const PrazosAgenda: React.FC<PrazosAgendaProps> = ({
             <div key={d.id} className={`deadline-card ${d.isFatal ? 'fatal' : ''}`}>
               <div className="deadline-card-top">
                 <div className="deadline-date-box">
-                  <span className="date-month">DATA FATAL</span>
+                  <span className="date-month">Vencimento</span>
                   <span className="date-day">{d.deadlineDate}</span>
                 </div>
 
@@ -55,17 +55,17 @@ export const PrazosAgenda: React.FC<PrazosAgendaProps> = ({
                   {isUrgent ? (
                     <span className="fatal-badge">
                       <AlertTriangle size={13} />
-                      {d.daysRemaining} dias restantes
+                      {d.daysRemaining} dias
                     </span>
                   ) : (
                     <span className="gold-badge">
                       <Clock size={13} />
-                      {d.daysRemaining} dias restantes
+                      {d.daysRemaining} dias
                     </span>
                   )}
                   <span className="synced-tag">
                     <CheckCircle2 size={12} color="#10B981" />
-                    Google Calendar
+                    Agendado
                   </span>
                 </div>
               </div>
@@ -91,11 +91,11 @@ export const PrazosAgenda: React.FC<PrazosAgendaProps> = ({
 
               <div className="deadline-card-footer">
                 <button className="btn-secondary mini-btn">
-                  <span>Ver Dossiê do Processo</span>
+                  <span>Processo</span>
                 </button>
                 <button className="btn-success mini-btn">
                   <CheckCircle2 size={13} />
-                  <span>Concluir Prazo</span>
+                  <span>Concluir</span>
                 </button>
               </div>
             </div>
