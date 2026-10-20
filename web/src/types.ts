@@ -37,6 +37,7 @@ export interface UserProfile {
 }
 
 export type CaseStatus = 'ACTIVE' | 'ARCHIVED' | 'SUSPENDED';
+export type CasePhase = 'INICIAL' | 'INSTRUÇÃO' | 'SENTENÇA' | 'RECURSAL' | 'EXECUÇÃO';
 
 export interface LegalCase {
   id: string;
@@ -44,7 +45,11 @@ export interface LegalCase {
   cnjNumber: string;
   court: string;
   clientName: string;
+  opposingParty?: string;
   caseArea: 'CÍVEL' | 'TRABALHISTA' | 'TRIBUTÁRIO' | 'FAMÍLIA' | 'CRIMINAL' | 'EMPRESARIAL';
+  phase?: CasePhase;
+  caseValue?: number;
+  distributionDate?: string;
   responsibleLawyerId: string;
   responsibleLawyerName: string;
   responsibleOAB: string;

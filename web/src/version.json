@@ -1,6 +1,6 @@
 {
-  "version": "1.6.1",
-  "buildDate": "2026-10-20T00:09:21.645Z",
+  "version": "1.7.0",
+  "buildDate": "2026-10-20T00:28:23.053Z",
   "channel": "production",
-  "title": "Adaptação da Demonstração para Cliente Solo e Otimizações de Cadastro"
+  "title": "Visualização Multi-modo de Intimações e Tabela Interativa de Processos"
 }

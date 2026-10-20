@@ -8,9 +8,14 @@ import {
   Clock, 
   Sparkles, 
   ChevronRight, 
-  ExternalLink,
-  ShieldAlert,
-  ArrowRight
+  ExternalLink, 
+  ShieldAlert, 
+  ArrowRight,
+  Columns,
+  Maximize2,
+  X,
+  Copy,
+  Check
 } from 'lucide-react';
 import { CaseNotification } from '../types';
 
@@ -19,6 +24,8 @@ interface InboxIntimacoesProps {
   onApproveNotification: (id: string) => void;
   isSoloMode: boolean;
 }
+
+export type IntimationViewMode = 'RESUMO' | 'SPLIT' | 'MODAL';
 
 export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
   notifications,
@@ -29,12 +36,21 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
     notifications[0] || null
   );
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED'>('ALL');
+  const [viewMode, setViewMode] = useState<IntimationViewMode>('SPLIT');
+  const [showOriginalModal, setShowOriginalModal] = useState<boolean>(false);
+  const [copiedModalText, setCopiedModalText] = useState<boolean>(false);
 
   const filtered = notifications.filter(n => {
     if (filter === 'PENDING') return n.status === 'PENDING_REVIEW';
     if (filter === 'APPROVED') return n.status === 'APPROVED';
     return true;
   });
+
+  const handleCopyRaw = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedModalText(true);
+    setTimeout(() => setCopiedModalText(false), 2000);
+  };
 
   return (
     <div className="inbox-layout">
@@ -178,6 +194,46 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               )}
             </div>
 
+            {/* Barra de Seleção do Modo de Visualização */}
+            <div className="intimation-view-toolbar">
+              <div className="intimation-view-label">
+                <Sparkles size={14} color="#B47E20" />
+                <span>Visualização:</span>
+              </div>
+
+              <div className="intimation-view-options">
+                <button 
+                  type="button"
+                  className={`intimation-view-btn ${viewMode === 'RESUMO' ? 'active' : ''}`}
+                  onClick={() => setViewMode('RESUMO')}
+                  title="Exibir somente o resumo inteligente e prazos da IA"
+                >
+                  <Sparkles size={13} />
+                  <span>Só Resumo</span>
+                </button>
+
+                <button 
+                  type="button"
+                  className={`intimation-view-btn ${viewMode === 'SPLIT' ? 'active' : ''}`}
+                  onClick={() => setViewMode('SPLIT')}
+                  title="Exibir resumo da IA e texto original completo"
+                >
+                  <Columns size={13} />
+                  <span>Ambos (Resumo + Original)</span>
+                </button>
+
+                <button 
+                  type="button"
+                  className={`intimation-view-btn ${viewMode === 'MODAL' ? 'active' : ''}`}
+                  onClick={() => setViewMode('MODAL')}
+                  title="Exibir resumo e botão para abrir a publicação em modal popup"
+                >
+                  <Maximize2 size={13} />
+                  <span>Resumo + Botão Modal</span>
+                </button>
+              </div>
+            </div>
+
             {/* Banner de Risco / Prazo Fatal */}
             <div className={`deadline-banner ${selectedNotif.extractedData.isFatalDeadline ? 'fatal' : 'normal'}`}>
               <div className="banner-icon-area">
@@ -213,11 +269,11 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               </div>
             )}
 
-            {/* Análise Inteligente */}
+            {/* Análise Inteligente (Visível em todos os modos) */}
             <div className="gemini-analysis-section">
               <div className="gemini-header">
                 <Sparkles size={16} color="#B47E20" />
-                <span>Resumo</span>
+                <span>Resumo da Inteligência Artificial</span>
               </div>
               <p className="gemini-summary-text">
                 {selectedNotif.extractedData.summary}
@@ -234,21 +290,58 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
               </ul>
 
               <div className="recommended-action-box">
-                <div className="action-tag">AÇÃO:</div>
+                <div className="action-tag">AÇÃO SUGERIDA:</div>
                 <div className="action-text">{selectedNotif.extractedData.recommendedAction}</div>
               </div>
             </div>
 
-            {/* Texto Original Recebido do Tribunal */}
-            <div className="raw-email-section">
-              <div className="raw-email-header">
-                <FileText size={14} />
-                <span>Teor:</span>
+            {/* MODO 2: Ambos (Resumo + Texto Original Abaixo) */}
+            {viewMode === 'SPLIT' && (
+              <div className="raw-email-section">
+                <div className="raw-email-header" style={{ justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FileText size={14} />
+                    <span>Teor da Publicação Recebida:</span>
+                  </div>
+                  <button 
+                    type="button"
+                    className="btn-secondary mini-btn"
+                    onClick={() => setShowOriginalModal(true)}
+                    style={{ fontSize: '0.72rem', padding: '4px 8px' }}
+                    title="Ampliar em tela cheia"
+                  >
+                    <Maximize2 size={12} />
+                    <span>Ver em Modal</span>
+                  </button>
+                </div>
+                <pre className="raw-email-content">
+                  {selectedNotif.rawBody}
+                </pre>
               </div>
-              <pre className="raw-email-content">
-                {selectedNotif.rawBody}
-              </pre>
-            </div>
+            )}
+
+            {/* MODO 3: Resumo com Botão que Abre Modal com o Original */}
+            {viewMode === 'MODAL' && (
+              <div className="modal-original-trigger-box">
+                <div className="modal-original-trigger-info">
+                  <FileText size={22} color="#B47E20" />
+                  <div>
+                    <div className="modal-original-trigger-title">Publicação Oficial do Tribunal</div>
+                    <div className="modal-original-trigger-desc">Texto integral recebido para auditoria e conferência.</div>
+                  </div>
+                </div>
+
+                <button 
+                  type="button"
+                  className="btn-primary mini-btn"
+                  onClick={() => setShowOriginalModal(true)}
+                  style={{ gap: '8px' }}
+                >
+                  <Maximize2 size={14} />
+                  <span>Ver Publicação Original</span>
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="no-selection-card glass-panel">
@@ -257,6 +350,60 @@ export const InboxIntimacoes: React.FC<InboxIntimacoesProps> = ({
           </div>
         )}
       </div>
+
+      {/* Modal Popup para Leitura do Texto Original */}
+      {showOriginalModal && selectedNotif && (
+        <div className="intimation-modal-backdrop" onClick={() => setShowOriginalModal(false)}>
+          <div className="intimation-modal-card" onClick={e => e.stopPropagation()}>
+            <div className="intimation-modal-header">
+              <div className="intimation-modal-title">
+                <FileText size={20} color="#B47E20" />
+                <span>Publicação Oficial — {selectedNotif.extractedData.cnjNumber}</span>
+              </div>
+              <button 
+                type="button"
+                className="copy-mini-btn" 
+                onClick={() => setShowOriginalModal(false)}
+                title="Fechar (Esc)"
+                style={{ padding: '6px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="intimation-modal-body">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '0.82rem', color: 'var(--text-secondary)', background: '#F1F5F9', padding: '10px 14px', borderRadius: '8px' }}>
+                <div><strong>Origem:</strong> {selectedNotif.rawSender}</div>
+                <div><strong>Recebido:</strong> {selectedNotif.receivedAt}</div>
+                <div><strong>Tipo:</strong> {selectedNotif.extractedData.intimationType}</div>
+              </div>
+
+              <pre className="intimation-modal-pre">
+                {selectedNotif.rawBody}
+              </pre>
+            </div>
+
+            <div className="intimation-modal-footer">
+              <button 
+                type="button"
+                className="btn-secondary mini-btn"
+                onClick={() => handleCopyRaw(selectedNotif.rawBody)}
+              >
+                {copiedModalText ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
+                <span>{copiedModalText ? 'Texto Copiado!' : 'Copiar Inteiro Teor'}</span>
+              </button>
+
+              <button 
+                type="button"
+                className="btn-primary mini-btn"
+                onClick={() => setShowOriginalModal(false)}
+              >
+                <span>Fechar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

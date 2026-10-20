@@ -6,6 +6,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.7.0] — 2026-10-20
+
+### ⚡ Visualização Multi-modo de Intimações e Tabela Interativa de Processos
+* Implementação de 3 modos de visualização de intimação: Só Resumo, Ambos (Resumo + Original) e Resumo com Modal Popup do Inteiro Teor
+* Adição de modal de alta resolução com cópia do texto integral do tribunal
+* Expansão da tabela de processos com colunas de Parte Contrária, Fase Processual, Valor da Causa e Datas
+* Ordenação interativa e auto-organizável em todas as colunas da listagem de processos
+* Indicador de métrica de Valor Total da Carteira Jurídica
+
 ## [1.6.1] — 2026-10-20
 
 ### ⚡ Adaptação da Demonstração para Cliente Solo e Otimizações de Cadastro
