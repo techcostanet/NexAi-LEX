@@ -6,6 +6,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.6.1] — 2026-10-20
+
+### ⚡ Adaptação da Demonstração para Cliente Solo e Otimizações de Cadastro
+* Substituição de e-mail de sistema por e-mail de compra/cadastro em Configurações
+* Ocultação da aba Equipe para clientes no plano Solo
+* Substituição do campo CNPJ por CPF no perfil Solo
+* Adaptação e detalhamento da aba Plano para o Plano Solo (R$ 97/mês) com opção de upgrade
+
 ## [1.6.0] — 2026-10-19
 
 ### ⚡ Padronizacao de Campos com 1 Palavra e Remocao de Jargoes Tecnicos

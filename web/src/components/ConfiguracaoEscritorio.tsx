@@ -23,13 +23,15 @@ interface ConfiguracaoEscritorioProps {
   tenant: Tenant;
   lawyers: UserProfile[];
   isSoloMode: boolean;
+  userEmail?: string;
   onSaveTenant?: (updated: Partial<Tenant>) => void;
 }
 
 export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
   tenant,
   lawyers,
-  isSoloMode
+  isSoloMode,
+  userEmail
 }) => {
   const [subTab, setSubTab] = useState<'banca' | 'inbound' | 'team' | 'integrations' | 'rules' | 'plan'>('banca');
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -37,10 +39,12 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
 
   // Estados dos formulários de configuração
   const [bancaNome, setBancaNome] = useState(tenant.name);
+  const [bancaCpf, setBancaCpf] = useState(tenant.cpf || '321.654.987-00');
   const [bancaCnpj, setBancaCnpj] = useState(tenant.cnpj || '14.892.301/0001-55');
-  const [bancaOab, setBancaOab] = useState(tenant.oabPrincipal || '123456/SP');
-  const [bancaTel, setBancaTel] = useState(tenant.telefone || '(11) 3289-4400');
-  const [bancaEnd, setBancaEnd] = useState(tenant.endereco || 'Av. Paulista, 1000 - Bela Vista, São Paulo - SP');
+  const [bancaEmailCadastro, setBancaEmailCadastro] = useState(userEmail || tenant.contactEmail || 'demo@nexai.com.br');
+  const [bancaOab, setBancaOab] = useState(tenant.oabPrincipal || (isSoloMode ? '345.891/SP' : '123456/SP'));
+  const [bancaTel, setBancaTel] = useState(tenant.telefone || (isSoloMode ? '(11) 98765-4321' : '(11) 3289-4400'));
+  const [bancaEnd, setBancaEnd] = useState(tenant.endereco || 'Av. Paulista, 1000, Cj. 42 - Bela Vista, São Paulo - SP');
 
   // Preferências
   const [googleCalendarSync, setGoogleCalendarSync] = useState(true);
@@ -78,7 +82,9 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
           <div>
             <h2 className="section-title">Configurações</h2>
             <p className="section-desc">
-              Gerencie as informações do seu escritório, equipe e regras de prazos.
+              {isSoloMode 
+                ? 'Gerencie seus dados profissionais, e-mail de captura e regras de prazos.' 
+                : 'Gerencie as informações do seu escritório, equipe e regras de prazos.'}
             </p>
           </div>
         </div>
@@ -98,7 +104,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('banca')}
           >
             <Building size={16} />
-            <span>Escritório</span>
+            <span>{isSoloMode ? 'Perfil Profissional' : 'Escritório'}</span>
           </button>
 
           <button 
@@ -147,15 +153,19 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
         {/* Área de Conteúdo da Configuração Selecionada */}
         <section className="settings-main-pane">
           
-          {/* 1. DADOS DO ESCRITÓRIO */}
+          {/* 1. DADOS CADASTRAIS (PERFIL PROFISSIONAL / ESCRITÓRIO) */}
           {subTab === 'banca' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">Escritório</h3>
-              <p className="settings-pane-desc">Informações cadastrais utilizadas nos relatórios e roteamentos judiciais.</p>
+              <h3 className="settings-pane-title">{isSoloMode ? 'Perfil Profissional' : 'Escritório'}</h3>
+              <p className="settings-pane-desc">
+                {isSoloMode 
+                  ? 'Informações cadastrais do advogado titular utilizadas nos relatórios, procurações e roteamentos judiciais.' 
+                  : 'Informações cadastrais utilizadas nos relatórios e roteamentos judiciais.'}
+              </p>
               
               <div className="form-grid-2col">
                 <div className="form-group">
-                  <label className="input-label">Nome:</label>
+                  <label className="input-label">Nome Completo / Titular:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -165,7 +175,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">Código:</label>
+                  <label className="input-label">Código da Conta:</label>
                   <input 
                     type="text" 
                     className="text-input readonly"
@@ -175,17 +185,18 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">CNPJ:</label>
+                  <label className="input-label">{isSoloMode ? 'CPF:' : 'CNPJ:'}</label>
                   <input 
                     type="text" 
                     className="text-input"
-                    value={bancaCnpj}
-                    onChange={e => setBancaCnpj(e.target.value)}
+                    value={isSoloMode ? bancaCpf : bancaCnpj}
+                    onChange={e => isSoloMode ? setBancaCpf(e.target.value) : setBancaCnpj(e.target.value)}
+                    placeholder={isSoloMode ? "000.000.000-00" : "00.000.000/0001-00"}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="input-label">OAB:</label>
+                  <label className="input-label">OAB Principal:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -194,8 +205,23 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                   />
                 </div>
 
+                {/* E-mail de Cadastro da Conta (Compra e Acesso) */}
                 <div className="form-group">
-                  <label className="input-label">Telefone:</label>
+                  <label className="input-label">E-mail de Cadastro:</label>
+                  <input 
+                    type="email" 
+                    className="text-input"
+                    value={bancaEmailCadastro}
+                    onChange={e => setBancaEmailCadastro(e.target.value)}
+                    placeholder="advogado@exemplo.com.br"
+                  />
+                  <small style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+                    E-mail do titular utilizado na contratação e login do NexAi-LEX.
+                  </small>
+                </div>
+
+                <div className="form-group">
+                  <label className="input-label">Telefone / WhatsApp:</label>
                   <input 
                     type="text" 
                     className="text-input"
@@ -205,53 +231,13 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
                 </div>
 
                 <div className="form-group full-width">
-                  <label className="input-label">Endereço:</label>
+                  <label className="input-label">Endereço Profissional:</label>
                   <input 
                     type="text" 
                     className="text-input"
                     value={bancaEnd}
                     onChange={e => setBancaEnd(e.target.value)}
                   />
-                </div>
-
-                {/* E-mail de Captura Integrado na Configuração */}
-                <div className="form-group full-width" style={{ marginTop: '0.75rem', background: '#FFFDF9', border: '1px solid var(--gold-border)', borderRadius: '12px', padding: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-                    <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gold-dark)', fontWeight: 700, margin: 0 }}>
-                      <Mail size={16} color="#B47E20" />
-                      <span>E-mail:</span>
-                    </label>
-                    <button 
-                      type="button" 
-                      onClick={() => setSubTab('inbound')}
-                      className="btn-secondary mini-btn"
-                      style={{ fontSize: '0.75rem' }}
-                    >
-                      <ExternalLink size={13} />
-                      <span>Instruções</span>
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <input 
-                      type="text" 
-                      className="text-input readonly"
-                      value={tenant.inboundEmail}
-                      readOnly
-                      style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-primary)', background: '#F8FAFC' }}
-                    />
-                    <button 
-                      type="button" 
-                      onClick={handleCopyInbound}
-                      className="btn-primary"
-                      style={{ whiteSpace: 'nowrap', padding: '0.6rem 1.1rem' }}
-                    >
-                      {copiedEmail ? <Check size={15} /> : <Copy size={15} />}
-                      <span>{copiedEmail ? 'Copiado' : 'Copiar'}</span>
-                    </button>
-                  </div>
-                  <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '8px', display: 'block' }}>
-                    Cadastre este endereço nos sistemas dos tribunais (PJe, e-SAJ, Projudi) ou convênios OAB para recebimento automático.
-                  </small>
                 </div>
               </div>
             </div>
@@ -446,38 +432,73 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
           {/* 6. MEU PLANO */}
           {subTab === 'plan' && (
             <div className="settings-section-card">
-              <h3 className="settings-pane-title">Plano</h3>
-              <p className="settings-pane-desc">Detalhes da assinatura e faturamento do escritório.</p>
+              <h3 className="settings-pane-title">Plano e Assinatura</h3>
+              <p className="settings-pane-desc">Detalhes da sua assinatura individual e recursos ativos.</p>
 
               <div className="client-plan-box">
                 <div className="client-plan-header">
                   <div>
-                    <span className="plan-badge-tag">{isSoloMode ? 'SOLO' : 'ESCRITÓRIO'}</span>
-                    <div className="client-plan-price">
-                      {isSoloMode ? 'R$ 97,00' : 'R$ 249,00'} <small>/ mês</small>
+                    <span className="plan-badge-tag" style={{ background: '#B47E20', color: '#FFFFFF', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      PLANO SOLO
+                    </span>
+                    <div className="client-plan-price" style={{ marginTop: '8px' }}>
+                      R$ 97,00 <small>/ mês</small>
                     </div>
                   </div>
-                  <span className="plan-active-status">● Ativo</span>
+                  <span className="plan-active-status" style={{ color: '#10B981', fontWeight: 600 }}>
+                    ● Assinatura Ativa
+                  </span>
                 </div>
 
                 <div className="client-plan-details">
                   <div className="plan-detail-row">
-                    <span>Usuários:</span>
-                    <strong>{isSoloMode ? '1 Advogado' : `${lawyers.length} de 4 Advogados`}</strong>
+                    <span>Modalidade:</span>
+                    <strong>Advogado Autônomo / Individual</strong>
                   </div>
                   <div className="plan-detail-row">
-                    <span>Renovação:</span>
+                    <span>Acesso:</span>
+                    <strong>1 Advogado Titular (Acesso Individual)</strong>
+                  </div>
+                  <div className="plan-detail-row">
+                    <span>Intimações com IA:</span>
+                    <strong>Até 250 intimações / mês</strong>
+                  </div>
+                  <div className="plan-detail-row">
+                    <span>Google Agenda:</span>
+                    <strong style={{ color: '#10B981' }}>Sincronização Ativa</strong>
+                  </div>
+                  <div className="plan-detail-row">
+                    <span>Alertas no WhatsApp:</span>
+                    <strong style={{ color: '#10B981' }}>Inclusos (Antecedência de 48h)</strong>
+                  </div>
+                  <div className="plan-detail-row">
+                    <span>Próxima Renovação:</span>
                     <strong>15 de Novembro de 2026</strong>
                   </div>
                   <div className="plan-detail-row">
-                    <span>Pagamento:</span>
-                    <strong>Cartão de Crédito</strong>
+                    <span>Forma de Pagamento:</span>
+                    <strong>Cartão de Crédito (•••• 4821)</strong>
                   </div>
                 </div>
 
-                <div className="client-plan-actions">
-                  <button className="btn-secondary mini-btn">Cartão</button>
-                  <button className="btn-primary mini-btn">Upgrade</button>
+                {/* Banner de Upgrade para Escritório */}
+                <div style={{ marginTop: '1.25rem', padding: '14px 18px', background: 'linear-gradient(135deg, #FFFDF8, #FBF6EC)', borderRadius: '12px', border: '1px solid var(--gold-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, color: 'var(--gold-dark)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>🚀</span> Sua banca cresceu?
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                      Migre para o <strong>Plano Escritório</strong> (até 4 advogados e 1.000 intimações/mês) por R$ 249/mês.
+                    </div>
+                  </div>
+                  <button className="btn-primary mini-btn" style={{ whiteSpace: 'nowrap' }}>
+                    Upgrade para Escritório
+                  </button>
+                </div>
+
+                <div className="client-plan-actions" style={{ marginTop: '1rem', display: 'flex', gap: '10px' }}>
+                  <button className="btn-secondary mini-btn">Alterar Cartão</button>
+                  <button className="btn-secondary mini-btn">Histórico de Faturas</button>
                 </div>
               </div>
             </div>

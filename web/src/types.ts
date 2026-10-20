@@ -13,6 +13,8 @@ export interface Tenant {
   // Campos expandidos de configuração
   oabPrincipal?: string;
   cnpj?: string;
+  cpf?: string;
+  contactEmail?: string;
   telefone?: string;
   endereco?: string;
   cidadeUf?: string;

@@ -31,8 +31,8 @@ export function App() {
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Modo de visualização determinado estritamente pelo Plano SaaS contratado pelo escritório
-  const currentTenant = userAuth?.tenantId === 'tenant_solo' ? mockSoloTenant : mockOfficeTenant;
+  // Modo de visualização determinado estritamente pelo Plano SaaS contratado pelo escritório (Demo no Plano Solo)
+  const currentTenant = (userAuth?.tenantId === 'tenant_solo' || !userAuth?.isSuperAdmin) ? mockSoloTenant : mockOfficeTenant;
   const isSoloMode = currentTenant.plan === 'solo';
   const currentUser = mockLawyers[0]; // Advogado titular / Dr. Carlos
 
@@ -216,6 +216,7 @@ export function App() {
                 tenant={currentTenant}
                 lawyers={mockLawyers}
                 isSoloMode={isSoloMode}
+                userEmail={userAuth?.email}
               />
             )}
           </main>

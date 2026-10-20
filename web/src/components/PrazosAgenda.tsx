@@ -26,7 +26,7 @@ export const PrazosAgenda: React.FC<PrazosAgendaProps> = ({
         <div>
           <h2 className="section-title">Prazos</h2>
           <p className="section-desc">
-            Controle oficial de prazos processuais e audiências do escritório.
+            Controle oficial de prazos processuais e audiências judiciais.
           </p>
         </div>
 

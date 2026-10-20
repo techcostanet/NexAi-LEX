@@ -27,10 +27,10 @@ export const KNOWN_ACCOUNTS = {
     email: DEMO_CLIENT_EMAIL,
     defaultPass: 'ClienteDemo2026',
     name: 'Dr. Carlos Eduardo Costa',
-    role: 'OFFICE_ADMIN' as const,
+    role: 'LAWYER' as const,
     isSuperAdmin: false,
-    tenantId: 'tenant_costa_adv',
-    tenantName: 'Costa & Silva Advogados Associados',
+    tenantId: 'tenant_solo',
+    tenantName: 'Carlos Eduardo Costa Advocacia',
     oabNumber: 'OAB/SP 345.891',
     avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120'
   }
@@ -62,7 +62,7 @@ class AuthService {
         uid: fbUser.uid,
         email: fbUser.email || DEMO_CLIENT_EMAIL,
         name: KNOWN_ACCOUNTS.DEMO_CLIENT.name,
-        role: 'OFFICE_ADMIN',
+        role: 'LAWYER',
         isSuperAdmin: false,
         tenantId: KNOWN_ACCOUNTS.DEMO_CLIENT.tenantId,
         tenantName: KNOWN_ACCOUNTS.DEMO_CLIENT.tenantName,

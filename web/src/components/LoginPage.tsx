@@ -199,15 +199,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               </button>
             </div>
 
-            {/* Card 2: Demo para Clientes (Advocacia) */}
+            {/* Card 2: Demo para Clientes (Advogado Solo) */}
             <div className="quick-access-card client-card">
               <div className="quick-card-header">
                 <div className="quick-icon-badge office-badge">
                   <Building2 size={16} />
                 </div>
                 <div>
-                  <div className="quick-card-title">Advogado</div>
-                  <div className="quick-card-badge">Costa & Silva Advogados</div>
+                  <div className="quick-card-title">Advogado Solo</div>
+                  <div className="quick-card-badge">Plano Solo</div>
                 </div>
               </div>
 
@@ -217,7 +217,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               </div>
 
               <p className="quick-card-description">
-                Visão oficial do escritório: intimações, prazos e processos.
+                Visão oficial do advogado autônomo: intimações, prazos e processos.
               </p>
 
               <button
@@ -227,7 +227,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 disabled={loading}
               >
                 <CheckCircle2 size={14} />
-                <span>Advogado</span>
+                <span>Advogado Solo</span>
               </button>
             </div>
           </div>

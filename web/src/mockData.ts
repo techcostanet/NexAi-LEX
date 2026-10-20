@@ -2,14 +2,19 @@ import { Tenant, UserProfile, LegalCase, CaseNotification, DeadlineEvent } from 
 
 export const mockSoloTenant: Tenant = {
   id: 'tenant_solo',
-  name: 'Carlos Renato Advocacia',
-  slug: 'carlos-renato',
-  inboundEmail: 'carlos-renato@inbox.nexai.com.br',
+  name: 'Carlos Eduardo Costa Advocacia',
+  slug: 'carlos-costa',
+  inboundEmail: 'carlos-costa@inbox.nexai.com.br',
   plan: 'solo',
   maxUsers: 1,
   activeProcessesCount: 68,
   monthlyNotificationsCount: 24,
-  createdAt: '2024-01-15'
+  createdAt: '2024-01-15',
+  cpf: '321.654.987-00',
+  oabPrincipal: '345.891/SP',
+  telefone: '(11) 98765-4321',
+  endereco: 'Av. Paulista, 1000, Cj. 42 - Bela Vista, São Paulo - SP',
+  contactEmail: 'demo@nexai.com.br'
 };
 
 export const mockOfficeTenant: Tenant = {
@@ -21,91 +26,66 @@ export const mockOfficeTenant: Tenant = {
   maxUsers: 4,
   activeProcessesCount: 312,
   monthlyNotificationsCount: 148,
-  createdAt: '2023-08-10'
+  createdAt: '2023-08-10',
+  cnpj: '14.892.301/0001-55',
+  oabPrincipal: '123456/SP',
+  telefone: '(11) 3289-4400',
+  endereco: 'Av. Paulista, 1000 - Bela Vista, São Paulo - SP',
+  contactEmail: 'contato@silvaoliveira.adv.br'
 };
 
 export const mockLawyers: UserProfile[] = [
   {
     id: 'user_1',
-    tenantId: 'tenant_office',
-    name: 'Dr. Carlos Renato Silva',
-    email: 'carlos@silvaoliveira.adv.br',
-    oabNumber: '123456/SP',
+    tenantId: 'tenant_solo',
+    name: 'Dr. Carlos Eduardo Costa',
+    email: 'demo@nexai.com.br',
+    oabNumber: '345.891/SP',
     role: 'ADMIN',
     googleCalendarLinked: true,
     avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'user_2',
-    tenantId: 'tenant_office',
-    name: 'Dra. Mariana Souza',
-    email: 'mariana@silvaoliveira.adv.br',
-    oabNumber: '234567/SP',
-    role: 'LAWYER',
-    googleCalendarLinked: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'user_3',
-    tenantId: 'tenant_office',
-    name: 'Dr. Roberto Lima',
-    email: 'roberto@silvaoliveira.adv.br',
-    oabNumber: '345678/SP',
-    role: 'LAWYER',
-    googleCalendarLinked: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'user_4',
-    tenantId: 'tenant_office',
-    name: 'Beatriz Santos',
-    email: 'beatriz@silvaoliveira.adv.br',
-    oabNumber: '',
-    role: 'ASSISTANT',
-    googleCalendarLinked: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80'
   }
 ];
 
 export const mockCases: LegalCase[] = [
   {
     id: 'case_1',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     cnjNumber: '1004523-89.2024.8.26.0100',
     court: 'TJSP - 28ª Vara Cível Central da Capital',
     clientName: 'Construtora Horizonte Empreendimentos S.A.',
     caseArea: 'CÍVEL',
     responsibleLawyerId: 'user_1',
-    responsibleLawyerName: 'Dr. Carlos Renato Silva',
-    responsibleOAB: '123456/SP',
+    responsibleLawyerName: 'Dr. Carlos Eduardo Costa',
+    responsibleOAB: '345.891/SP',
     status: 'ACTIVE',
     lastUpdateDate: '2026-10-18',
     eventsCount: 14
   },
   {
     id: 'case_2',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     cnjNumber: '0010892-45.2024.5.02.0012',
     court: 'TRT-2 - 12ª Vara do Trabalho de São Paulo',
     clientName: 'Marcos Vinicius de Albuquerque',
     caseArea: 'TRABALHISTA',
-    responsibleLawyerId: 'user_2',
-    responsibleLawyerName: 'Dra. Mariana Souza',
-    responsibleOAB: '234567/SP',
+    responsibleLawyerId: 'user_1',
+    responsibleLawyerName: 'Dr. Carlos Eduardo Costa',
+    responsibleOAB: '345.891/SP',
     status: 'ACTIVE',
     lastUpdateDate: '2026-10-17',
     eventsCount: 9
   },
   {
     id: 'case_3',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     cnjNumber: '5003412-18.2024.4.03.6100',
     court: 'TRF-3 - 7ª Vara Federal Tributária',
     clientName: 'Nexus Tech Logística & Distribuição Ltda.',
     caseArea: 'TRIBUTÁRIO',
-    responsibleLawyerId: 'user_3',
-    responsibleLawyerName: 'Dr. Roberto Lima',
-    responsibleOAB: '345678/SP',
+    responsibleLawyerId: 'user_1',
+    responsibleLawyerName: 'Dr. Carlos Eduardo Costa',
+    responsibleOAB: '345.891/SP',
     status: 'ACTIVE',
     lastUpdateDate: '2026-10-15',
     eventsCount: 22
@@ -115,7 +95,7 @@ export const mockCases: LegalCase[] = [
 export const initialNotifications: CaseNotification[] = [
   {
     id: 'notif_1',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     caseId: 'case_1',
     rawSubject: 'DJE TJSP - Publicação de Despacho com Prazo - Proc. 1004523-89.2024.8.26.0100',
     rawSender: 'comunicacao@tjsp.jus.br',
@@ -125,14 +105,14 @@ Processo Digital nº: 1004523-89.2024.8.26.0100
 Classe - Assunto: Procedimento Comum Cível - Rescisão do contrato e devolução do dinheiro
 Requerente: Pedro Paulo Silveira
 Requerido: Construtora Horizonte Empreendimentos S.A.
-Advogado(a): CARLOS RENATO SILVA - OAB/SP 123456
+Advogado(a): CARLOS EDUARDO COSTA - OAB/SP 345891
 
 DESPACHO: Vistos. Manifeste-se a parte requerida em réplica à contestação e documentos juntados às fls. 180/240, no prazo legal de 15 (quinze) dias úteis, sob pena de preclusão. Intime-se. São Paulo, 18 de Outubro de 2026. Juiz de Direito.`,
     receivedAt: 'Hoje às 11:42',
     extractedData: {
       cnjNumber: '1004523-89.2024.8.26.0100',
       court: 'TJSP - 28ª Vara Cível Central da Capital',
-      lawyerOAB: '123456/SP',
+      lawyerOAB: '345.891/SP',
       intimationType: 'DESPACHO',
       suggestedDeadlineDays: 15,
       isFatalDeadline: true,
@@ -147,11 +127,11 @@ DESPACHO: Vistos. Manifeste-se a parte requerida em réplica à contestação e 
     },
     status: 'PENDING_REVIEW',
     assignedLawyerId: 'user_1',
-    assignedLawyerName: 'Dr. Carlos Renato Silva'
+    assignedLawyerName: 'Dr. Carlos Eduardo Costa'
   },
   {
     id: 'notif_2',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     caseId: 'case_2',
     rawSubject: 'TRT 2ª Região - Notificação de Designação de Audiência de Instrução',
     rawSender: 'pje.notificacoes@trt2.jus.br',
@@ -160,14 +140,14 @@ DESPACHO: Vistos. Manifeste-se a parte requerida em réplica à contestação e 
 PROCESSO: 0010892-45.2024.5.02.0012
 RECLAMANTE: Marcos Vinicius de Albuquerque
 RECLAMADO: Banco Safira S/A
-ADVOGADA: MARIANA SOUZA - OAB/SP 234567
+ADVOGADO: CARLOS EDUARDO COSTA - OAB/SP 345891
 
 Fica V. Sa. intimada da designação de AUDIÊNCIA DE INSTRUÇÃO E JULGAMENTO para o dia 04/11/2026 às 14h30min, na modalidade PRESENCIAL. As testemunhas deverão comparecer independentemente de intimação ou arroladas com antecedência de 5 dias.`,
     receivedAt: 'Hoje às 09:15',
     extractedData: {
       cnjNumber: '0010892-45.2024.5.02.0012',
       court: 'TRT-2 - 12ª Vara do Trabalho de São Paulo',
-      lawyerOAB: '234567/SP',
+      lawyerOAB: '345.891/SP',
       intimationType: 'AUDIÊNCIA',
       suggestedDeadlineDays: 5,
       isFatalDeadline: true,
@@ -181,9 +161,9 @@ Fica V. Sa. intimada da designação de AUDIÊNCIA DE INSTRUÇÃO E JULGAMENTO p
       recommendedAction: 'Agendar call preparatória com o cliente e protocolar o rol de testemunhas até 27/10/2026.'
     },
     status: 'APPROVED',
-    assignedLawyerId: 'user_2',
-    assignedLawyerName: 'Dra. Mariana Souza',
-    reviewedBy: 'Dra. Mariana Souza',
+    assignedLawyerId: 'user_1',
+    assignedLawyerName: 'Dr. Carlos Eduardo Costa',
+    reviewedBy: 'Dr. Carlos Eduardo Costa',
     reviewedAt: 'Hoje às 10:05',
     calendarEventId: 'cal_event_trt2_123'
   }
@@ -192,7 +172,7 @@ Fica V. Sa. intimada da designação de AUDIÊNCIA DE INSTRUÇÃO E JULGAMENTO p
 export const initialDeadlines: DeadlineEvent[] = [
   {
     id: 'dl_1',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     caseId: 'case_2',
     cnjNumber: '0010892-45.2024.5.02.0012',
     clientName: 'Marcos Vinicius de Albuquerque',
@@ -201,11 +181,11 @@ export const initialDeadlines: DeadlineEvent[] = [
     daysRemaining: 9,
     isFatal: true,
     status: 'PENDING',
-    responsibleLawyerName: 'Dra. Mariana Souza'
+    responsibleLawyerName: 'Dr. Carlos Eduardo Costa'
   },
   {
     id: 'dl_2',
-    tenantId: 'tenant_office',
+    tenantId: 'tenant_solo',
     caseId: 'case_1',
     cnjNumber: '1004523-89.2024.8.26.0100',
     clientName: 'Construtora Horizonte Empreendimentos S.A.',
@@ -214,7 +194,7 @@ export const initialDeadlines: DeadlineEvent[] = [
     daysRemaining: 23,
     isFatal: true,
     status: 'PENDING',
-    responsibleLawyerName: 'Dr. Carlos Renato Silva'
+    responsibleLawyerName: 'Dr. Carlos Eduardo Costa'
   }
 ];
 
