@@ -243,6 +243,19 @@ class CloudRealtimeSync {
       };
     }
   }
+
+  public async addCase(legalCase: LegalCase): Promise<void> {
+    try {
+      const docRef = doc(db, COLL_CASES, legalCase.id);
+      await setDoc(docRef, legalCase);
+      console.log(`✓ [Firestore] Processo ${legalCase.id} gravado no banco na nuvem.`);
+    } catch (err: any) {
+      console.warn('ℹ️ Gravação de processo na nuvem:', err.message);
+    }
+
+    this.cloudCases = [legalCase, ...this.cloudCases.filter(c => c.id !== legalCase.id)];
+    this.casesListeners.forEach(l => l(this.cloudCases.filter(c => c.tenantId === legalCase.tenantId)));
+  }
 }
 
 export const firestoreService = new CloudRealtimeSync();

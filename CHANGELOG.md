@@ -6,6 +6,13 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.8.0] — 2026-10-24
+
+### ⚡ Integração Oficial OAB/DJEN (CNJ) e Importador de E-mails do Gmail para Testes
+* Integração com API pública oficial do CNJ (DJEN) para consulta de publicações por OAB e UF
+* Importador inteligente de e-mails do Gmail com extração heurística de prazos e exemplos reais em 1 clique
+* Persistência e sincronização direta no Cloud Firestore
+
 ## [1.7.2] — 2026-10-24
 
 ### ⚡ Interface de Login Profissional, Animação de Ícone e Favicon Oficial

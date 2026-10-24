@@ -2759,6 +2759,43 @@
   }
 }
 
+.settings-pane-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-imported {
+  background: #059669 !important;
+  color: #FFFFFF !important;
+  cursor: default !important;
+  box-shadow: none !important;
+}
+
+.gmail-template-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gmail-template-btn:hover {
+  background: #F8FAFC;
+  border-color: #B47E20;
+  color: #B47E20;
+  transform: translateY(-1px);
+}
+
 .inbound-highlight-box {
   background: #FFFDF9;
   border: 1px solid var(--gold-border);
