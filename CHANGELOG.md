@@ -6,6 +6,12 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.7.1] — 2026-10-24
+
+### ⚡ Ajuste de compatibilidade das Functions no novo ambiente
+* Atualização do pacote @google/genai para v0.2.0
+* Resolução do erro TS6133 em inboundWebhook.ts
+
 ## [1.7.0] — 2026-10-20
 
 ### ⚡ Visualização Multi-modo de Intimações e Tabela Interativa de Processos

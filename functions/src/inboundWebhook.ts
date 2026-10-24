@@ -95,7 +95,7 @@ export const handleInboundEmail = onRequest({ cors: true }, async (req, res) => 
       success: true,
       notificationId: notificationRef.id,
       extractedData,
-      assignedTo: assignedLawyerName || 'Geral do Escritório'
+      assignedTo: assignedLawyerName || tenant.name || 'Geral do Escritório'
     });
   } catch (error: any) {
     console.error('Erro no processamento do inbound email:', error);
