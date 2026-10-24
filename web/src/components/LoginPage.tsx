@@ -7,14 +7,10 @@ import {
   EyeOff, 
   ShieldCheck, 
   ArrowRight, 
-  Sparkles, 
-  Building2, 
-  Crown, 
-  CheckCircle2, 
   AlertCircle,
   Loader2
 } from 'lucide-react';
-import { authService, KNOWN_ACCOUNTS } from '../services/authService';
+import { authService } from '../services/authService';
 import { AuthUser } from '../types';
 import versionData from '../version.json';
 
@@ -41,22 +37,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
     try {
       const user = await authService.login(email, password);
-      onLoginSuccess(user);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Falha ao autenticar.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (accEmail: string, accPass: string) => {
-    setEmail(accEmail);
-    setPassword(accPass);
-    setLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const user = await authService.login(accEmail, accPass);
       onLoginSuccess(user);
     } catch (err: any) {
       setErrorMessage(err.message || 'Falha ao autenticar.');
@@ -108,7 +88,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ex: contato@techcosta.net"
+                  placeholder="ex: advogado@escritorio.com.br"
                   disabled={loading}
                   autoComplete="email"
                   required
@@ -159,78 +139,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               )}
             </button>
           </form>
-
-          {/* Divisor de Acessos Rápidos */}
-          <div className="login-divider">
-            <span>Acesso Rápido</span>
-          </div>
-
-          {/* Cards de Acesso Prontos (SuperAdmin & Demo Clientes) */}
-          <div className="quick-access-grid">
-            {/* Card 1: SuperAdmin Master (TechCosta) */}
-            <div className="quick-access-card admin-card">
-              <div className="quick-card-header">
-                <div className="quick-icon-badge crown-badge">
-                  <Crown size={16} />
-                </div>
-                <div>
-                  <div className="quick-card-title">Administração</div>
-                  <div className="quick-card-badge">SuperAdmin</div>
-                </div>
-              </div>
-
-              <div className="quick-card-credentials">
-                <div><strong>E-mail:</strong> {KNOWN_ACCOUNTS.MASTER_ADMIN.email}</div>
-                <div><strong>Senha:</strong> {KNOWN_ACCOUNTS.MASTER_ADMIN.defaultPass}</div>
-              </div>
-
-              <p className="quick-card-description">
-                Acesso global a faturamento, métricas e controle de escritórios clientes.
-              </p>
-
-              <button
-                type="button"
-                className="btn-quick-login btn-admin-quick"
-                onClick={() => handleQuickLogin(KNOWN_ACCOUNTS.MASTER_ADMIN.email, KNOWN_ACCOUNTS.MASTER_ADMIN.defaultPass)}
-                disabled={loading}
-              >
-                <Sparkles size={14} />
-                <span>Administrador</span>
-              </button>
-            </div>
-
-            {/* Card 2: Demo para Clientes (Advogado Solo) */}
-            <div className="quick-access-card client-card">
-              <div className="quick-card-header">
-                <div className="quick-icon-badge office-badge">
-                  <Building2 size={16} />
-                </div>
-                <div>
-                  <div className="quick-card-title">Advogado Solo</div>
-                  <div className="quick-card-badge">Plano Solo</div>
-                </div>
-              </div>
-
-              <div className="quick-card-credentials">
-                <div><strong>E-mail:</strong> {KNOWN_ACCOUNTS.DEMO_CLIENT.email}</div>
-                <div><strong>Senha:</strong> {KNOWN_ACCOUNTS.DEMO_CLIENT.defaultPass}</div>
-              </div>
-
-              <p className="quick-card-description">
-                Visão oficial do advogado autônomo: intimações, prazos e processos.
-              </p>
-
-              <button
-                type="button"
-                className="btn-quick-login btn-client-quick"
-                onClick={() => handleQuickLogin(KNOWN_ACCOUNTS.DEMO_CLIENT.email, KNOWN_ACCOUNTS.DEMO_CLIENT.defaultPass)}
-                disabled={loading}
-              >
-                <CheckCircle2 size={14} />
-                <span>Advogado Solo</span>
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Rodapé de Segurança */}

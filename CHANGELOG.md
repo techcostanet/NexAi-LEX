@@ -6,6 +6,13 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.7.2] — 2026-10-24
+
+### ⚡ Interface de Login Profissional, Animação de Ícone e Favicon Oficial
+* Remoção dos cards de acesso rápido e credenciais de teste da tela de login
+* Adição de animação ao ícone da balança na tela de login
+* Inclusão de Favicon SVG oficial com a balança jurídica
+
 ## [1.7.1] — 2026-10-24
 
 ### ⚡ Ajuste de compatibilidade das Functions no novo ambiente
