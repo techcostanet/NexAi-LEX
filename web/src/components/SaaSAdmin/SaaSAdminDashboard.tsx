@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   DollarSign, 
@@ -11,7 +11,6 @@ import {
   Search, 
   CreditCard, 
   ArrowUpRight, 
-  ArrowLeft, 
   Filter, 
   CheckCircle2, 
   AlertTriangle, 
@@ -35,15 +34,14 @@ import {
   mockSaaSInfraStatus 
 } from '../../mockData';
 import { SaaSClient, TenantPlan, ClientSubscriptionStatus, AuthUser } from '../../types';
+import { firestoreService } from '../../services/firestoreService';
 
 interface SaaSAdminDashboardProps {
-  onBackToClient: () => void;
   onLogout?: () => void;
   currentUserAuth?: AuthUser;
 }
 
 export const SaaSAdminDashboard: React.FC<SaaSAdminDashboardProps> = ({ 
-  onBackToClient,
   onLogout,
   currentUserAuth
 }) => {
@@ -52,6 +50,14 @@ export const SaaSAdminDashboard: React.FC<SaaSAdminDashboardProps> = ({
   const [statusFilter, setStatusFilter] = useState<'ALL' | ClientSubscriptionStatus>('ALL');
   const [clientsList, setClientsList] = useState<SaaSClient[]>(mockSaaSClients);
   const [selectedClient, setSelectedClient] = useState<SaaSClient | null>(null);
+
+  // Sincronização em tempo real de novos clientes / leads do SaaS
+  useEffect(() => {
+    const unsub = firestoreService.subscribeSaaSClients((data) => {
+      setClientsList(data);
+    });
+    return () => unsub();
+  }, []);
 
   const filteredClients = clientsList.filter(c => {
     const matchesSearch = 
@@ -98,15 +104,6 @@ export const SaaSAdminDashboard: React.FC<SaaSAdminDashboardProps> = ({
               <span className="status-dot-pulse"></span>
               <span>Google Cloud: <strong>100% Online</strong></span>
             </div>
-
-            <button 
-              onClick={onBackToClient}
-              className="btn-exit-admin"
-              title="Visualizar como Escritório de Advocacia"
-            >
-              <ArrowLeft size={16} />
-              <span>Ver Visão do Escritório</span>
-            </button>
 
             {onLogout && (
               <button

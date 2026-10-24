@@ -12,13 +12,20 @@ import {
 } from 'lucide-react';
 import { authService } from '../services/authService';
 import { AuthUser } from '../types';
+import { ArrowLeft } from 'lucide-react';
 import versionData from '../version.json';
 
 interface LoginPageProps {
   onLoginSuccess: (user: AuthUser) => void;
+  onNavigateHome?: () => void;
+  onOpenTrial?: () => void;
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
+export const LoginPage: React.FC<LoginPageProps> = ({ 
+  onLoginSuccess,
+  onNavigateHome,
+  onOpenTrial 
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -48,6 +55,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   return (
     <div className="login-screen-wrapper">
       <div className="login-container">
+        {onNavigateHome && (
+          <div style={{ marginBottom: '14px' }}>
+            <button 
+              type="button" 
+              onClick={onNavigateHome}
+              className="admin-back-home-btn"
+            >
+              <ArrowLeft size={16} />
+              <span>Voltar para a Página Inicial</span>
+            </button>
+          </div>
+        )}
+
         {/* Top Brand Header */}
         <div className="login-header">
           <div className="login-brand-icon">
@@ -138,6 +158,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 </>
               )}
             </button>
+
+            {onOpenTrial && (
+              <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '0.84rem', color: '#64748B' }}>
+                Ainda não tem conta?{' '}
+                <button
+                  type="button"
+                  onClick={onOpenTrial}
+                  style={{ background: 'none', border: 'none', color: '#B47E20', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                >
+                  Teste 15 dias grátis
+                </button>
+              </div>
+            )}
           </form>
         </div>
 

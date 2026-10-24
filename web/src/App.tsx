@@ -6,6 +6,8 @@ import { PrazosAgenda } from './components/PrazosAgenda';
 import { ConfiguracaoEscritorio } from './components/ConfiguracaoEscritorio';
 import { SaaSAdminDashboard } from './components/SaaSAdmin/SaaSAdminDashboard';
 import { LoginPage } from './components/LoginPage';
+import { AdminLoginPage } from './components/AdminLoginPage';
+import { LandingPage } from './components/LandingPage/LandingPage';
 import { 
   mockSoloTenant, 
   mockOfficeTenant, 
@@ -17,13 +19,22 @@ import { authService } from './services/authService';
 import { CheckCircle2, Loader2, Scale } from 'lucide-react';
 import './App.css';
 
+const normalizePath = (path: string): string => {
+  const clean = path.toLowerCase().trim();
+  if (clean.startsWith('/admin')) return '/admin';
+  if (clean.startsWith('/adv')) return '/adv';
+  return '/';
+};
+
 export function App() {
+  // Controle de Rota por URL do Navegador
+  const [currentPath, setCurrentPath] = useState<string>(() => normalizePath(window.location.pathname));
+
   // Estado de Autenticação na Nuvem (Firebase Auth + Firestore)
   const [userAuth, setUserAuth] = useState<AuthUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState('inbox');
-  const [isSaaSAdminView, setIsSaaSAdminView] = useState(false);
   
   const [notifications, setNotifications] = useState<CaseNotification[]>([]);
   const [deadlines, setDeadlines] = useState<DeadlineEvent[]>([]);
@@ -32,7 +43,23 @@ export function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [tenantUpdates, setTenantUpdates] = useState<Record<string, Partial<Tenant>>>({});
 
-  // Modo de visualização determinado estritamente pelo Plano SaaS contratado pelo escritório (Demo no Plano Solo)
+  // Navegação SPA transparente
+  const navigate = (path: string) => {
+    window.history.pushState(null, '', path);
+    setCurrentPath(normalizePath(path));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Sincroniza com botões voltar/avançar do navegador
+  useEffect(() => {
+    const onPopState = () => {
+      setCurrentPath(normalizePath(window.location.pathname));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // Modo de visualização determinado estritamente pelo Plano SaaS contratado pelo escritório
   const baseTenant = (userAuth?.tenantId === 'tenant_solo' || !userAuth?.isSuperAdmin) ? mockSoloTenant : mockOfficeTenant;
   const currentTenant: Tenant = {
     ...baseTenant,
@@ -46,12 +73,6 @@ export function App() {
     const unsubscribeAuth = authService.subscribeAuthState((user) => {
       setUserAuth(user);
       setAuthLoading(false);
-      // Se for SuperAdmin Master, abre diretamente na Administração do SaaS
-      if (user?.isSuperAdmin) {
-        setIsSaaSAdminView(true);
-      } else {
-        setIsSaaSAdminView(false);
-      }
     });
 
     return () => unsubscribeAuth();
@@ -60,7 +81,7 @@ export function App() {
   // Sincronização 100% Online em Tempo Real (Zero localStorage)
   // Conecta diretamente ao Cloud Firestore para colaboração de múltiplos advogados
   useEffect(() => {
-    if (!userAuth) return;
+    if (!userAuth || currentPath !== '/adv') return;
 
     const unsubNotifs = firestoreService.subscribeNotifications(currentTenant.id, (data) => {
       setNotifications(data);
@@ -79,7 +100,7 @@ export function App() {
       unsubDeadlines();
       unsubCases();
     };
-  }, [userAuth, currentTenant.id]);
+  }, [userAuth, currentTenant.id, currentPath]);
 
   const pendingCount = notifications.filter(n => n.status === 'PENDING_REVIEW').length;
 
@@ -90,19 +111,18 @@ export function App() {
 
   const handleLoginSuccess = (user: AuthUser) => {
     setUserAuth(user);
-    if (user.isSuperAdmin) {
-      setIsSaaSAdminView(true);
-    } else {
-      setIsSaaSAdminView(false);
-    }
     showToast(`✓ Bem-vindo(a), ${user.name}!`);
+    if (user.isSuperAdmin) {
+      navigate('/admin');
+    } else {
+      navigate('/adv');
+    }
   };
 
   const handleLogout = async () => {
     try {
       await authService.logout();
       setUserAuth(null);
-      setIsSaaSAdminView(false);
       showToast('Sessão encerrada com segurança.');
     } catch (e) {
       console.error('Erro ao encerrar sessão:', e);
@@ -160,21 +180,16 @@ export function App() {
           </div>
           <div className="auth-loading-spinner-row">
             <Loader2 size={24} className="animate-spin" color="#B47E20" />
-            <span>Carregando...</span>
+            <span>Carregando plataforma...</span>
           </div>
         </div>
       </div>
     );
   }
 
-  // Se o usuário não estiver autenticado, exibe a tela de login
-  if (!userAuth) {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
-  }
-
   return (
-    <div className="app-wrapper">
-      {/* Toast Alert */}
+    <div className="app-root-container">
+      {/* Toast Alert Global */}
       {toastMessage && (
         <div className="toast-notification">
           <CheckCircle2 size={20} color="#10B981" />
@@ -182,66 +197,90 @@ export function App() {
         </div>
       )}
 
-      {/* Roteamento Condicional: Área de Gestão SaaS Admin vs Portal do Advogado Cliente */}
-      {isSaaSAdminView ? (
-        <SaaSAdminDashboard 
-          onBackToClient={() => setIsSaaSAdminView(false)} 
-          onLogout={handleLogout}
-          currentUserAuth={userAuth}
-        />
-      ) : (
-        <>
-          {/* Top Navbar da Área do Advogado */}
-          <Navbar
-            tenant={currentTenant}
-            currentUser={currentUser}
-            currentUserAuth={userAuth}
-            activeTab={activeTab}
-            onSelectTab={setActiveTab}
-            pendingCount={pendingCount}
-            onOpenSaaSAdmin={() => setIsSaaSAdminView(true)}
+      {/* ROTA 1: /admin - Administração Master do SaaS */}
+      {currentPath === '/admin' && (
+        userAuth?.isSuperAdmin ? (
+          <SaaSAdminDashboard 
             onLogout={handleLogout}
+            currentUserAuth={userAuth}
           />
+        ) : (
+          <AdminLoginPage 
+            onLoginSuccess={handleLoginSuccess}
+            onNavigateHome={() => navigate('/')}
+          />
+        )
+      )}
 
-          {/* Conteúdo da Aba Ativa do Cliente */}
-          <main className="tab-content">
-            {activeTab === 'inbox' && (
-              <InboxIntimacoes
-                notifications={notifications}
-                onApproveNotification={handleApproveNotification}
-                isSoloMode={isSoloMode}
-              />
-            )}
+      {/* ROTA 2: /adv - Portal do Escritório / Advogado Cliente */}
+      {currentPath === '/adv' && (
+        userAuth ? (
+          <div className="app-wrapper">
+            {/* Top Navbar da Área do Advogado */}
+            <Navbar
+              tenant={currentTenant}
+              currentUser={currentUser}
+              currentUserAuth={userAuth}
+              activeTab={activeTab}
+              onSelectTab={setActiveTab}
+              pendingCount={pendingCount}
+              onOpenSaaSAdmin={() => navigate('/admin')}
+              onLogout={handleLogout}
+            />
 
-            {activeTab === 'cases' && (
-              <ProcessosList
-                cases={cases}
-                isSoloMode={isSoloMode}
-              />
-            )}
+            {/* Conteúdo da Aba Ativa do Cliente */}
+            <main className="tab-content">
+              {activeTab === 'inbox' && (
+                <InboxIntimacoes
+                  notifications={notifications}
+                  onApproveNotification={handleApproveNotification}
+                  isSoloMode={isSoloMode}
+                />
+              )}
 
-            {activeTab === 'deadlines' && (
-              <PrazosAgenda
-                deadlines={deadlines}
-                isSoloMode={isSoloMode}
-              />
-            )}
+              {activeTab === 'cases' && (
+                <ProcessosList
+                  cases={cases}
+                  isSoloMode={isSoloMode}
+                />
+              )}
 
-            {activeTab === 'settings' && (
-              <ConfiguracaoEscritorio
-                tenant={currentTenant}
-                lawyers={mockLawyers}
-                isSoloMode={isSoloMode}
-                userEmail={userAuth?.email}
-                onSaveTenant={handleSaveTenant}
-              />
-            )}
-          </main>
-        </>
+              {activeTab === 'deadlines' && (
+                <PrazosAgenda
+                  deadlines={deadlines}
+                  isSoloMode={isSoloMode}
+                />
+              )}
+
+              {activeTab === 'settings' && (
+                <ConfiguracaoEscritorio
+                  tenant={currentTenant}
+                  lawyers={mockLawyers}
+                  isSoloMode={isSoloMode}
+                  userEmail={userAuth?.email}
+                  onSaveTenant={handleSaveTenant}
+                />
+              )}
+            </main>
+          </div>
+        ) : (
+          <LoginPage 
+            onLoginSuccess={handleLoginSuccess}
+            onNavigateHome={() => navigate('/')}
+            onOpenTrial={() => navigate('/')}
+          />
+        )
+      )}
+
+      {/* ROTA 3: / (Raiz) - Landing Page Pública Oficial com Captação para Teste Grátis */}
+      {currentPath === '/' && (
+        <LandingPage 
+          onNavigateToLawyer={() => navigate('/adv')}
+          onNavigateToAdmin={() => navigate('/admin')}
+        />
       )}
     </div>
   );
 }
 
 export default App;
-

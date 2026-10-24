@@ -6,6 +6,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.9.0] — 2026-10-24
+
+### ⚡ Rotas /admin, /adv e Landing Page com Cadastro de Teste Grátis 15 Dias
+* Removido botão de visão do escritório no SaaS Admin
+* Dados do SaaS Admin limpos mantendo apenas conta demo
+* Rotas dedicadas /admin, /adv e /
+* Landing Page completa com cadastro para teste grátis 15 dias integrado ao SaaS Admin em tempo real no Google Cloud Firestore
+
 ## [1.8.1] — 2026-10-24
 
 ### ⚡ Conexao Oficial com Google Gmail para Leitura e Preenchimento Automatico de Processos

@@ -10,14 +10,15 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { CaseNotification, DeadlineEvent, LegalCase, Tenant } from '../types';
-import { initialNotifications, initialDeadlines, mockCases } from '../mockData';
+import { CaseNotification, DeadlineEvent, LegalCase, Tenant, SaaSClient } from '../types';
+import { initialNotifications, initialDeadlines, mockCases, mockSaaSClients } from '../mockData';
 
 // Constantes de Coleções Oficiais do Cloud Firestore
 const COLL_NOTIFICATIONS = 'notifications_inbox';
 const COLL_DEADLINES = 'deadlines';
 const COLL_CASES = 'cases';
 const COLL_TENANTS = 'tenants';
+const COLL_SAAS_CLIENTS = 'saas_clients';
 
 // Sincronização 100% Online em Tempo Real com Cloud Firestore
 // Sem localStorage - Múltiplos advogados compartilham dados na nuvem Google
@@ -25,10 +26,12 @@ class CloudRealtimeSync {
   private notificationsListeners: ((data: CaseNotification[]) => void)[] = [];
   private deadlinesListeners: ((data: DeadlineEvent[]) => void)[] = [];
   private casesListeners: ((data: LegalCase[]) => void)[] = [];
+  private saasClientsListeners: ((data: SaaSClient[]) => void)[] = [];
 
   private cloudNotifications: CaseNotification[] = [...initialNotifications];
   private cloudDeadlines: DeadlineEvent[] = [...initialDeadlines];
   private cloudCases: LegalCase[] = [...mockCases];
+  private cloudSaaSClients: SaaSClient[] = [...mockSaaSClients];
 
   private seededTenants: Set<string> = new Set();
 
@@ -266,6 +269,57 @@ class CloudRealtimeSync {
     } catch (err: any) {
       console.warn('ℹ️ Gravação de tenant na nuvem:', err.message);
     }
+  }
+
+  // Clientes do SaaS em Tempo Real (SuperAdmin)
+  public subscribeSaaSClients(callback: (data: SaaSClient[]) => void): Unsubscribe {
+    try {
+      const q = query(collection(db, COLL_SAAS_CLIENTS));
+      const unsubscribeFirestore = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as SaaSClient));
+          const merged = [...docs];
+          for (const def of this.cloudSaaSClients) {
+            if (!merged.some(m => m.id === def.id)) {
+              merged.push(def);
+            }
+          }
+          this.cloudSaaSClients = merged;
+          callback(merged);
+        } else {
+          callback(this.cloudSaaSClients);
+        }
+      }, (err) => {
+        console.warn('ℹ️ Firestore listener de saas_clients:', err.message);
+      });
+
+      this.saasClientsListeners.push(callback);
+      callback(this.cloudSaaSClients);
+
+      return () => {
+        unsubscribeFirestore();
+        this.saasClientsListeners = this.saasClientsListeners.filter(l => l !== callback);
+      };
+    } catch {
+      this.saasClientsListeners.push(callback);
+      callback(this.cloudSaaSClients);
+      return () => {
+        this.saasClientsListeners = this.saasClientsListeners.filter(l => l !== callback);
+      };
+    }
+  }
+
+  public async addSaaSClient(client: SaaSClient): Promise<void> {
+    try {
+      const docRef = doc(db, COLL_SAAS_CLIENTS, client.id);
+      await setDoc(docRef, client);
+      console.log(`✓ [Firestore] Novo cliente/lead ${client.id} gravado no banco.`);
+    } catch (err: any) {
+      console.warn('ℹ️ Gravação de novo lead/cliente na nuvem:', err.message);
+    }
+
+    this.cloudSaaSClients = [client, ...this.cloudSaaSClients.filter(c => c.id !== client.id)];
+    this.saasClientsListeners.forEach(l => l(this.cloudSaaSClients));
   }
 }
 
