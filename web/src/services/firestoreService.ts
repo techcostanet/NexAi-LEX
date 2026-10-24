@@ -10,13 +10,14 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { CaseNotification, DeadlineEvent, LegalCase } from '../types';
+import { CaseNotification, DeadlineEvent, LegalCase, Tenant } from '../types';
 import { initialNotifications, initialDeadlines, mockCases } from '../mockData';
 
 // Constantes de Coleções Oficiais do Cloud Firestore
 const COLL_NOTIFICATIONS = 'notifications_inbox';
 const COLL_DEADLINES = 'deadlines';
 const COLL_CASES = 'cases';
+const COLL_TENANTS = 'tenants';
 
 // Sincronização 100% Online em Tempo Real com Cloud Firestore
 // Sem localStorage - Múltiplos advogados compartilham dados na nuvem Google
@@ -255,6 +256,16 @@ class CloudRealtimeSync {
 
     this.cloudCases = [legalCase, ...this.cloudCases.filter(c => c.id !== legalCase.id)];
     this.casesListeners.forEach(l => l(this.cloudCases.filter(c => c.tenantId === legalCase.tenantId)));
+  }
+
+  public async updateTenant(tenantId: string, updates: Partial<Tenant>): Promise<void> {
+    try {
+      const docRef = doc(db, COLL_TENANTS, tenantId);
+      await setDoc(docRef, updates, { merge: true });
+      console.log(`✓ [Firestore] Configurações da banca ${tenantId} salvas na nuvem.`);
+    } catch (err: any) {
+      console.warn('ℹ️ Gravação de tenant na nuvem:', err.message);
+    }
   }
 }
 

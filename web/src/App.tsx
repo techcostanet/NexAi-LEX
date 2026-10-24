@@ -11,7 +11,7 @@ import {
   mockOfficeTenant, 
   mockLawyers
 } from './mockData';
-import { CaseNotification, DeadlineEvent, LegalCase, AuthUser } from './types';
+import { CaseNotification, DeadlineEvent, LegalCase, AuthUser, Tenant } from './types';
 import { firestoreService } from './services/firestoreService';
 import { authService } from './services/authService';
 import { CheckCircle2, Loader2, Scale } from 'lucide-react';
@@ -30,9 +30,14 @@ export function App() {
   const [cases, setCases] = useState<LegalCase[]>([]);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [tenantUpdates, setTenantUpdates] = useState<Record<string, Partial<Tenant>>>({});
 
   // Modo de visualização determinado estritamente pelo Plano SaaS contratado pelo escritório (Demo no Plano Solo)
-  const currentTenant = (userAuth?.tenantId === 'tenant_solo' || !userAuth?.isSuperAdmin) ? mockSoloTenant : mockOfficeTenant;
+  const baseTenant = (userAuth?.tenantId === 'tenant_solo' || !userAuth?.isSuperAdmin) ? mockSoloTenant : mockOfficeTenant;
+  const currentTenant: Tenant = {
+    ...baseTenant,
+    ...(tenantUpdates[baseTenant.id] || {})
+  };
   const isSoloMode = currentTenant.plan === 'solo';
   const currentUser = mockLawyers[0]; // Advogado titular / Dr. Carlos
 
@@ -133,6 +138,17 @@ export function App() {
     showToast(`✓ Prazo aprovado com sucesso!`);
   };
 
+  const handleSaveTenant = async (updated: Partial<Tenant>) => {
+    setTenantUpdates(prev => ({
+      ...prev,
+      [currentTenant.id]: {
+        ...(prev[currentTenant.id] || {}),
+        ...updated
+      }
+    }));
+    await firestoreService.updateTenant(currentTenant.id, updated);
+  };
+
   // Tela de Carregamento Inicial
   if (authLoading) {
     return (
@@ -217,6 +233,7 @@ export function App() {
                 lawyers={mockLawyers}
                 isSoloMode={isSoloMode}
                 userEmail={userAuth?.email}
+                onSaveTenant={handleSaveTenant}
               />
             )}
           </main>

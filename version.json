@@ -1,6 +1,6 @@
 {
-  "version": "1.8.0",
-  "buildDate": "2026-10-24T17:16:52.092Z",
+  "version": "1.8.1",
+  "buildDate": "2026-10-24T18:02:06.271Z",
   "channel": "production",
-  "title": "Integração Oficial OAB/DJEN (CNJ) e Importador de E-mails do Gmail para Testes"
+  "title": "Conexao Oficial com Google Gmail para Leitura e Preenchimento Automatico de Processos"
 }

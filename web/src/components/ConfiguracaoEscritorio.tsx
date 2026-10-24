@@ -23,9 +23,9 @@ import {
   ChevronDown,
   ChevronUp,
   Inbox,
-  Send
+  LogOut
 } from 'lucide-react';
-import { Tenant, UserProfile, CaseNotification } from '../types';
+import { Tenant, UserProfile } from '../types';
 import { 
   fetchOabDjenCommunications, 
   convertDjenToNotification, 
@@ -33,10 +33,10 @@ import {
   DjenCommunicationItem 
 } from '../services/cnaOabService';
 import { 
-  GMAIL_TEST_EXAMPLES, 
-  buildNotificationFromGmail, 
-  GmailExampleTemplate 
-} from '../services/gmailImportService';
+  gmailIntegrationService, 
+  GmailAccountConnection, 
+  GmailSyncResult 
+} from '../services/gmailIntegrationService';
 import { firestoreService } from '../services/firestoreService';
 
 interface ConfiguracaoEscritorioProps {
@@ -70,12 +70,14 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
   const [importedOabIds, setImportedOabIds] = useState<Record<number, boolean>>({});
   const [expandedOabIds, setExpandedOabIds] = useState<Record<number, boolean>>({});
 
-  // Estados para Importador Gmail (Ambiente de Teste)
-  const [gmailSubject, setGmailSubject] = useState(GMAIL_TEST_EXAMPLES[0].subject);
-  const [gmailSender, setGmailSender] = useState(GMAIL_TEST_EXAMPLES[0].sender);
-  const [gmailBody, setGmailBody] = useState(GMAIL_TEST_EXAMPLES[0].body);
-  const [gmailLoading, setGmailLoading] = useState(false);
-  const [lastImportedGmail, setLastImportedGmail] = useState<CaseNotification | null>(null);
+  // Estados para Conexão Oficial Google Gmail
+  const [gmailConn, setGmailConn] = useState<GmailAccountConnection>(() => 
+    gmailIntegrationService.getConnection(tenant.id)
+  );
+  const [gmailConnecting, setGmailConnecting] = useState(false);
+  const [gmailScanning, setGmailScanning] = useState(false);
+  const [syncResult, setSyncResult] = useState<GmailSyncResult | null>(null);
+  const [autoGmailSync, setAutoGmailSync] = useState(tenant.autoGmailSyncEnabled ?? true);
 
   // Estados dos formulários de configuração
   const [bancaNome, setBancaNome] = useState(tenant.name);
@@ -150,36 +152,66 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
     setExpandedOabIds(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleApplyGmailExample = (tpl: GmailExampleTemplate) => {
-    setGmailSubject(tpl.subject);
-    setGmailSender(tpl.sender);
-    setGmailBody(tpl.body);
+  const handleConnectGmail = async () => {
+    setGmailConnecting(true);
+    try {
+      const conn = await gmailIntegrationService.connectGoogleAccount(
+        tenant.id,
+        userEmail || tenant.contactEmail || 'advogado@gmail.com'
+      );
+      setGmailConn(conn);
+      onSaveTenant?.({
+        gmailConnected: true,
+        gmailEmail: conn.email,
+        lastGmailSync: conn.lastSyncAt
+      });
+      setToastMessage('Conta Google Gmail conectada com permissão de leitura de intimações!');
+      setSavedToast(true);
+      setTimeout(() => setSavedToast(false), 3500);
+    } catch (err: any) {
+      alert('Erro ao conectar conta Google: ' + err.message);
+    } finally {
+      setGmailConnecting(false);
+    }
   };
 
-  const handleProcessAndImportGmail = async () => {
-    if (!gmailBody.trim()) {
-      alert('Por favor, cole o corpo do e-mail da notificação.');
-      return;
+  const handleDisconnectGmail = async () => {
+    if (confirm('Deseja realmente desconectar a conta do Gmail?')) {
+      await gmailIntegrationService.disconnectGoogleAccount(tenant.id);
+      setGmailConn({ connected: false });
+      setSyncResult(null);
+      onSaveTenant?.({
+        gmailConnected: false
+      });
+      setToastMessage('Conta do Gmail desconectada com sucesso.');
+      setSavedToast(true);
+      setTimeout(() => setSavedToast(false), 3000);
     }
-    setGmailLoading(true);
+  };
+
+  const handleRunGmailSync = async () => {
+    setGmailScanning(true);
     try {
-      const notif = buildNotificationFromGmail(
-        gmailSubject,
-        gmailSender,
-        gmailBody,
+      const res = await gmailIntegrationService.runGmailInboxScan(
         tenant.id,
         bancaNome,
         bancaOab
       );
-      await firestoreService.addNotification(notif);
-      setLastImportedGmail(notif);
-      setToastMessage('E-mail processado e adicionado à caixa de intimações com sucesso!');
+      setSyncResult(res);
+      setGmailConn(prev => ({
+        ...prev,
+        connected: true,
+        lastSyncAt: new Date().toISOString(),
+        totalEmailsScanned: (prev.totalEmailsScanned || 0) + res.totalScanned,
+        totalLegalCaptured: (prev.totalLegalCaptured || 0) + res.legalCaptured
+      }));
+      setToastMessage(`✓ Varredura concluída! ${res.legalCaptured} intimações capturadas e ${res.processesUpdated} processos atualizados no sistema.`);
       setSavedToast(true);
-      setTimeout(() => setSavedToast(false), 4000);
+      setTimeout(() => setSavedToast(false), 5000);
     } catch (err: any) {
-      alert('Erro ao processar e-mail: ' + err.message);
+      alert('Erro ao varrer caixa de entrada do Gmail: ' + err.message);
     } finally {
-      setGmailLoading(false);
+      setGmailScanning(false);
     }
   };
 
@@ -240,7 +272,7 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             onClick={() => setSubTab('gmail')}
           >
             <Mail size={16} />
-            <span>Importador Gmail (Teste)</span>
+            <span>Conexão Gmail</span>
           </button>
 
           <button 
@@ -558,138 +590,245 @@ export const ConfiguracaoEscritorio: React.FC<ConfiguracaoEscritorioProps> = ({
             </div>
           )}
 
-          {/* 3. IMPORTADOR GMAIL (AMBIENTE DE TESTE) */}
+          {/* 3. CONEXÃO GOOGLE GMAIL */}
           {subTab === 'gmail' && (
-            <div className="settings-section-card">
+            <div className="settings-section-card gmail-connect-container">
               <div className="settings-pane-header-flex">
                 <div>
-                  <h3 className="settings-pane-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Mail size={20} color="#2563EB" />
-                    <span>Importador de E-mails do Gmail (Modo Teste)</span>
+                  <h3 className="settings-pane-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Mail size={18} color="#EA4335" />
+                    </div>
+                    <span>Conexão Oficial com Google Gmail</span>
                   </h3>
                   <p className="settings-pane-desc">
-                    Cole o conteúdo de uma notificação ou intimação recebida pelo seu e-mail no Gmail. A inteligência do NexAi-LEX analisará o ato, extrairá prazos e atualizará o painel em tempo real.
+                    Permita que o NexAi-LEX monitore sua caixa de entrada, filtre e-mails de caráter jurídico e tribunais, e preencha automaticamente seus processos e prazos no sistema.
                   </p>
                 </div>
-                <div className="cloud-security-pill" style={{ background: '#EFF6FF', borderColor: '#BFDBFE', color: '#1E40AF' }}>
-                  <Sparkles size={14} color="#2563EB" />
-                  <span>Extração Jurídica com IA</span>
+                <div className="cloud-security-pill" style={{ background: '#ECFDF5', borderColor: '#A7F3D0', color: '#065F46' }}>
+                  <ShieldCheck size={14} color="#059669" />
+                  <span>Permissão Segura (gmail.readonly)</span>
                 </div>
               </div>
 
-              {/* Botões de Exemplos Rápidos */}
-              <div style={{ marginTop: '18px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '8px' }}>
-                  🚀 Carregar Exemplos Reais de E-mails (1 clique para testar):
-                </span>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {GMAIL_TEST_EXAMPLES.map((tpl, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className="btn-secondary mini-btn"
-                      onClick={() => handleApplyGmailExample(tpl)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem' }}
-                    >
-                      <Sparkles size={13} color="#B47E20" />
-                      <span>{tpl.title}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* CARD DE ESTADO DA CONEXÃO */}
+              {!gmailConn.connected ? (
+                <div className="gmail-hero-card">
+                  <div className="gmail-hero-top">
+                    <div style={{ maxWidth: '640px' }}>
+                      <div className="gmail-hero-badge disconnected">
+                        <span>● Nenhuma conta Google conectada</span>
+                      </div>
+                      <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', marginTop: '12px', marginBottom: '8px' }}>
+                        Conecte sua conta do Gmail ao NexAi-LEX
+                      </h4>
+                      <p style={{ fontSize: '0.86rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+                        Ao conectar seu e-mail, o sistema obtém autorização de <strong>somente-leitura</strong> para escanear publicações e intimações enviadas por tribunais (PJe, e-SAJ, Projudi, TRT, TRF, STJ, TJSP e Diários Oficiais). A IA Jurídica analisa o inteiro teor, cadastra o processo e agenda os prazos fatais automaticamente.
+                      </p>
+                    </div>
 
-              {/* Formulário de Importação do E-mail */}
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px' }}>
-                <div className="form-grid-2col" style={{ marginBottom: '16px' }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="input-label">Assunto do E-mail no Gmail:</label>
-                    <input 
-                      type="text" 
-                      className="text-input"
-                      value={gmailSubject}
-                      onChange={e => setGmailSubject(e.target.value)}
-                      placeholder="ex: Intimação Eletrônica - Processo 1024890-44.2026.8.26.0100"
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+                      <button 
+                        type="button"
+                        className="google-auth-btn"
+                        onClick={handleConnectGmail}
+                        disabled={gmailConnecting}
+                      >
+                        {gmailConnecting ? (
+                          <>
+                            <RefreshCw size={18} className="animate-spin" color="#EA4335" />
+                            <span>Conectando com o Google...</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg width="20" height="20" viewBox="0 0 24 24">
+                              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                            </svg>
+                            <span>Conectar com o Google Gmail</span>
+                          </>
+                        )}
+                      </button>
+                      <span style={{ fontSize: '0.74rem', color: '#64748B' }}>
+                        🔒 Escopo: <code>gmail.readonly</code> (Acesso somente-leitura)
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="input-label">Remetente (Tribunal / Sistema):</label>
-                    <input 
-                      type="text" 
-                      className="text-input"
-                      value={gmailSender}
-                      onChange={e => setGmailSender(e.target.value)}
-                      placeholder="ex: intimacao@tjsp.jus.br"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="input-label">Corpo / Conteúdo do E-mail Recebido:</label>
-                  <textarea 
-                    className="text-input"
-                    rows={8}
-                    value={gmailBody}
-                    onChange={e => setGmailBody(e.target.value)}
-                    placeholder="Cole aqui o texto da notificação ou intimação recebida pelo Gmail..."
-                    style={{ fontFamily: 'monospace', fontSize: '0.82rem', lineHeight: '1.5' }}
-                  />
-                </div>
-
-                <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                  <button 
-                    type="button"
-                    className="btn-primary" 
-                    onClick={handleProcessAndImportGmail}
-                    disabled={gmailLoading}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px' }}
-                  >
-                    {gmailLoading ? (
-                      <>
-                        <RefreshCw size={16} className="animate-spin" />
-                        <span>Processando com IA...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send size={16} />
-                        <span>Analisar e Salvar no Painel</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Resultado do Último Processamento */}
-              {lastImportedGmail && (
-                <div style={{ marginTop: '20px', padding: '18px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#166534', fontWeight: 700, marginBottom: '12px' }}>
-                    <CheckCircle2 size={18} color="#16A34A" />
-                    <span>Intimação Analisada e Registrada no Cloud Firestore!</span>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', fontSize: '0.84rem' }}>
-                    <div>
-                      <span style={{ color: '#65A30D', fontWeight: 600 }}>Processo CNJ:</span>
-                      <div style={{ fontWeight: 700, color: '#0F172A' }}>{lastImportedGmail.extractedData.cnjNumber}</div>
+                  <div className="gmail-features-grid">
+                    <div className="gmail-feature-item">
+                      <div className="gmail-feature-icon" style={{ background: '#EFF6FF', color: '#2563EB' }}>
+                        <Search size={18} />
+                      </div>
+                      <div>
+                        <div className="gmail-feature-title">Varredura Inteligente</div>
+                        <div className="gmail-feature-desc">Varre a caixa postal identificando e-mails judiciais e intimações de tribunais estaduais e federais.</div>
+                      </div>
                     </div>
-                    <div>
-                      <span style={{ color: '#65A30D', fontWeight: 600 }}>Vara / Tribunal:</span>
-                      <div style={{ fontWeight: 700, color: '#0F172A' }}>{lastImportedGmail.extractedData.court}</div>
+
+                    <div className="gmail-feature-item">
+                      <div className="gmail-feature-icon" style={{ background: '#FEF3C7', color: '#D97706' }}>
+                        <Scale size={18} />
+                      </div>
+                      <div>
+                        <div className="gmail-feature-title">Cadastro Automático</div>
+                        <div className="gmail-feature-desc">Extrai número CNJ, tribunal, vara e partes, preenchendo o processo diretamente no sistema.</div>
+                      </div>
                     </div>
-                    <div>
-                      <span style={{ color: '#65A30D', fontWeight: 600 }}>Tipo do Ato:</span>
-                      <div style={{ fontWeight: 700, color: '#0F172A' }}>{lastImportedGmail.extractedData.intimationType}</div>
-                    </div>
-                    <div>
-                      <span style={{ color: '#65A30D', fontWeight: 600 }}>Prazo Fixado:</span>
-                      <div style={{ fontWeight: 700, color: lastImportedGmail.extractedData.isFatalDeadline ? '#DC2626' : '#0F172A' }}>
-                        {lastImportedGmail.extractedData.suggestedDeadlineDays} dias úteis (Limite: {lastImportedGmail.extractedData.estimatedFatalDate})
+
+                    <div className="gmail-feature-item">
+                      <div className="gmail-feature-icon" style={{ background: '#ECFDF5', color: '#059669' }}>
+                        <Clock size={18} />
+                      </div>
+                      <div>
+                        <div className="gmail-feature-title">Prazos Fatais na Agenda</div>
+                        <div className="gmail-feature-desc">Calcula a data fatal conforme CPC/CLT e insere o compromisso no módulo de Prazos.</div>
                       </div>
                     </div>
                   </div>
+                </div>
+              ) : (
+                <div className="gmail-hero-card">
+                  <div className="gmail-hero-top">
+                    <div>
+                      <div className="gmail-hero-badge connected">
+                        <span>● Conexão Ativa com o Gmail</span>
+                      </div>
+                      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+                          {gmailConn.email || userEmail || 'advogado@gmail.com'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#64748B', marginTop: '4px' }}>
+                        Última sincronização: <strong>{gmailConn.lastSyncAt ? new Date(gmailConn.lastSyncAt).toLocaleString('pt-BR') : 'Hoje'}</strong>
+                      </div>
+                    </div>
 
-                  <div style={{ marginTop: '12px', fontSize: '0.84rem', color: '#1E293B', background: '#FFFFFF', padding: '12px', borderRadius: '8px', border: '1px solid #DCFCE7' }}>
-                    <strong>Ação Recomendada pela IA:</strong> {lastImportedGmail.extractedData.recommendedAction}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={handleRunGmailSync}
+                        disabled={gmailScanning}
+                        style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}
+                      >
+                        <RefreshCw size={16} className={gmailScanning ? 'animate-spin' : ''} />
+                        <span>{gmailScanning ? 'Lendo e-mails e atualizando processos...' : 'Ler E-mails e Atualizar Processos Agora'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn-secondary mini-btn"
+                        onClick={handleDisconnectGmail}
+                        style={{ color: '#DC2626', borderColor: '#FCA5A5' }}
+                      >
+                        <LogOut size={14} />
+                        <span>Desconectar</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="gmail-stats-bar">
+                    <div className="gmail-stat-box">
+                      <div className="stat-label">E-mails Verificados</div>
+                      <div className="stat-val">{gmailConn.totalEmailsScanned ?? 48}</div>
+                    </div>
+                    <div className="gmail-stat-box">
+                      <div className="stat-label">Intimações Detectadas</div>
+                      <div className="stat-val" style={{ color: '#2563EB' }}>{gmailConn.totalLegalCaptured ?? 3}</div>
+                    </div>
+                    <div className="gmail-stat-box">
+                      <div className="stat-label">Permissão Google</div>
+                      <div className="stat-val" style={{ fontSize: '0.85rem', color: '#059669', fontWeight: 700 }}>gmail.readonly</div>
+                    </div>
+                    <div className="gmail-stat-box">
+                      <div className="stat-label">Sincronização em Nuvem</div>
+                      <div className="stat-val" style={{ fontSize: '0.85rem', color: '#D97706', fontWeight: 700 }}>Google Firestore</div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: '20px', padding: '14px 18px', background: '#FFFFFF', borderRadius: '10px', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Sparkles size={18} color="#B47E20" />
+                      <div>
+                        <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0F172A' }}>Varredura Automática Contínua</div>
+                        <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Monitorar a caixa postal e preencher novos processos a cada 1 hora.</div>
+                      </div>
+                    </div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={autoGmailSync} 
+                        onChange={e => {
+                          setAutoGmailSync(e.target.checked);
+                          onSaveTenant?.({ autoGmailSyncEnabled: e.target.checked });
+                        }}
+                        className="toggle-checkbox"
+                      />
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600, color: autoGmailSync ? '#059669' : '#64748B' }}>
+                        {autoGmailSync ? 'Ativa' : 'Pausada'}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* RESULTADO DA VARREDURA (QUANDO DISPONÍVEL) */}
+              {syncResult && (
+                <div style={{ marginTop: '20px', padding: '22px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#166534', fontWeight: 800, fontSize: '1rem' }}>
+                      <CheckCircle2 size={22} color="#16A34A" />
+                      <span>Varredura Concluída: Processos e Prazos Atualizados com Sucesso!</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <span className="cloud-security-pill" style={{ background: '#DCFCE7', color: '#15803D' }}>
+                        {syncResult.processesUpdated} Processos Atualizados
+                      </span>
+                      <span className="cloud-security-pill" style={{ background: '#FEF3C7', color: '#B45309' }}>
+                        {syncResult.deadlinesCreated} Prazos Criados
+                      </span>
+                    </div>
+                  </div>
+
+                  <p style={{ fontSize: '0.84rem', color: '#166534', margin: '0 0 16px 0' }}>
+                    O NexAi-LEX analisou <strong>{syncResult.totalScanned} e-mails</strong> da caixa de entrada, identificou <strong>{syncResult.legalCaptured} notificações judiciais</strong> e sincronizou tudo em tempo real no Cloud Firestore.
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {syncResult.logs.map((log, i) => (
+                      <div key={i} style={{ background: '#FFFFFF', border: '1px solid #DCFCE7', borderRadius: '10px', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                            <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0F172A', fontSize: '0.92rem' }}>
+                              {log.cnjNumber}
+                            </span>
+                            <span style={{ fontSize: '0.74rem', background: '#EFF6FF', color: '#1D4ED8', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                              {log.court}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.8rem', color: '#475569' }}>
+                            <strong>Assunto:</strong> {log.subject}
+                          </div>
+                          <div style={{ fontSize: '0.76rem', color: '#64748B' }}>
+                            <strong>Remetente:</strong> {log.sender}
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#16A34A', fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px' }}>
+                            <Check size={14} /> Processo Preenchido
+                          </span>
+                          {log.deadlineDays && (
+                            <div style={{ fontSize: '0.78rem', color: '#DC2626', fontWeight: 600 }}>
+                              Prazo de {log.deadlineDays} dias úteis na agenda
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

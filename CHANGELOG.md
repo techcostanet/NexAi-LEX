@@ -6,6 +6,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.8.1] — 2026-10-24
+
+### ⚡ Conexao Oficial com Google Gmail para Leitura e Preenchimento Automatico de Processos
+* Adicionado botao e tela oficial de Conexao com Google Gmail com escopo gmail.readonly
+* Robo de leitura inteligente da caixa postal com filtro de emails judiciais e tribunais
+* Preenchimento automatico de processos e prazos no Cloud Firestore em tempo real
+* Monitoramento e varredura continua configuravel em Configuracoes
+
 ## [1.8.0] — 2026-10-24
 
 ### ⚡ Integração Oficial OAB/DJEN (CNJ) e Importador de E-mails do Gmail para Testes

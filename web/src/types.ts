@@ -21,6 +21,10 @@ export interface Tenant {
   whatsappAlertsEnabled?: boolean;
   alertPriorHours?: number; // 24 ou 48 horas
   cpcCountingRule?: 'DIAS_UTEIS' | 'DIAS_CORRIDOS';
+  gmailConnected?: boolean;
+  gmailEmail?: string;
+  lastGmailSync?: string;
+  autoGmailSyncEnabled?: boolean;
 }
 
 export type UserRole = 'ADMIN' | 'LAWYER' | 'ASSISTANT';
